@@ -14,11 +14,6 @@ TODO:
 #include "gridio.h"
 #include "defaults.h"
 
-//#ifdef SF3DMODELS
-int sf3dmodels;
-//#else
-//int sf3dmodels = 0;
-//#endif
 /*....................................................................*/
 void
 sanityCheckOfRead(const int status, configInfo *par, struct gridInfoType gridInfoRead){
@@ -289,6 +284,8 @@ readOrBuildGrid(configInfo *par, struct grid **gp){
   struct cell *dc=NULL; /* Not used at present. */
   unsigned long numCells;
   char **collPartNames=NULL,message[STR_LEN_0];
+  
+  int sf3dmodels;
 
   par->dataFlags = 0;
   if(par->gridInFile!=NULL){
