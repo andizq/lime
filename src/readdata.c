@@ -50,7 +50,8 @@ void readDatatab(){
 
   for( noo = 0; noo < Ndata; noo++ ){
 
-    fscanf(fp,"%d %lf %lf %lf %lf %lf %lf %lf",&ID[noo],&DENS[noo],&TEMP[noo],&VEL_x[noo],&VEL_y[noo],&VEL_z[noo],&ABUND[noo],&GTD[noo]);
+    fscanf(fp,"%d %lf %lf %lf %lf %lf %lf %lf",
+	   &ID[noo],&DENS[noo],&TEMP[noo],&VEL_x[noo],&VEL_y[noo],&VEL_z[noo],&ABUND[noo],&GTD[noo]);
     
   }
   
