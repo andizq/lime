@@ -8,7 +8,6 @@
  */
 
 #include "lime.h"
-#include "readdata.h"
 
 #ifdef NOVERBOSE
 int silent = 1;
@@ -20,7 +19,9 @@ int silent = 0;
 int sf3dmodels = 1;
 #else
 int sf3dmodels = 0;
+void readDatatab();
 #endif
+
 /*....................................................................*/
 int
 initParImg(inputPars *par, image **img)
@@ -151,7 +152,7 @@ int main() {
 
   (void)status; // just to stop compiler warnings because this return value is currently unused.
 
-  if(sf3dmodels) readDatatab(); // sf3dmodels{
+  if(sf3dmodels) readDatatab();
 
   nImages = initParImg(&par, &img);
 

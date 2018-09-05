@@ -13,7 +13,7 @@ TODO:
 #include "tree_random.h"
 #include "gridio.h"
 #include "defaults.h"
-
+#include "mindistance.h"
 /*....................................................................*/
 void
 sanityCheckOfRead(const int status, configInfo *par, struct gridInfoType gridInfoRead){
@@ -236,7 +236,7 @@ void randomsViaRejection(configInfo *par, const unsigned int desiredNumPoints, g
       }
     } while(!pointIsAccepted);
     /* Now pointEvaluation has decided that we like the point */
-
+    
     for(di=0;di<DIM;di++)
       outRandLocations[i_u][di]=x[di];
 
@@ -285,8 +285,11 @@ readOrBuildGrid(configInfo *par, struct grid **gp){
   unsigned long numCells;
   char **collPartNames=NULL,message[STR_LEN_0];
   
-  int sf3dmodels;
-
+  extern int sf3dmodels; /* Already took True or False at main.c, 
+			    depending on the activation of the -S flag. */  
+  unsigned int i_id;
+  int *ID_picked = malloc (sizeof(int) * par->ncell);    
+  
   par->dataFlags = 0;
   if(par->gridInFile!=NULL){
     readGridWrapper(par, gp, &collPartNames, &numCollPartRead);
@@ -495,12 +498,25 @@ Generate the remaining values if needed. **Note** that we check a few of them to
   if(onlyBitsSet(par->dataFlags, DS_mask_2)) /* Only happens if (i) we read no file and have constructed this data within LIME, or (ii) we read a file at dataStageI==2. */
     writeGridIfRequired(par, *gp, NULL, 2);
 
+
+  if (sf3dmodels){
+    for(i_id=0;i_id<par->ncell;i_id++){
+      ID_picked[i_id] = find_id_min((*gp)[i_id].x[0], xm,
+				    (*gp)[i_id].x[1], ym,
+				    (*gp)[i_id].x[2], zm);
+    }
+  }
+
   if(!allBitsSet(par->dataFlags, DS_mask_density)){
     /* Note that we have checked in parseInput() that the user has defined sufficient values. */
     for(i=0;i<par->ncell; i++)
       (*gp)[i].dens = malloc(sizeof(double)*par->numDensities);
+    
+    
     for(i=0;i<par->pIntensity;i++)
       density((*gp)[i].x[0],(*gp)[i].x[1],(*gp)[i].x[2],(*gp)[i].dens);
+   
+    
     for(i=par->pIntensity;i<par->ncell;i++){
       for(j=0;j<par->numDensities;j++)
         (*gp)[i].dens[j]=EPS; //************** what is the low but non zero value for? Probably to make sure no ills happen in case something gets divided by this?
@@ -526,9 +542,10 @@ exit(1);
     if(sf3dmodels)
       for(i=0;i<par->pIntensity;i++)
 	temperature((*gp)[i].x[0],(*gp)[i].x[1],(*gp)[i].x[2],(*gp)[i].t);
-    else
+	//temperature(0.0,0.0,(double)ID_picked[i],(*gp)[i].t);
+    else{
       for(i=0;i<par->pIntensity;i++)
-	temperature((*gp)[i].x[0],(*gp)[i].x[1],(*gp)[i].x[2],(*gp)[i].t);
+	temperature((*gp)[i].x[0],(*gp)[i].x[1],(*gp)[i].x[2],(*gp)[i].t);}
     
     for(i=par->pIntensity;i<par->ncell;i++){
       (*gp)[i].t[0]=par->tcmb;

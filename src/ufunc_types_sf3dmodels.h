@@ -7,8 +7,8 @@
  *
  */
 
-#ifndef UFUNC_TYPES_H
-#define UFUNC_TYPES_H
+#ifndef UFUNC_TYPES_SF3DMODELS_H
+#define UFUNC_TYPES_SF3DMODELS_H
 
 #include "lime_config.h" /* for configInfo */
 
@@ -26,11 +26,12 @@
 
 void	density(double,double,double,double *);
 /*#ifdef SF3DMODELS
-void	temperature(int,double *);
+
 #else
 void	temperature(double,double,double,double *);
 #endif*/
-void	temperature(double,double,double,double *);
+//void	temperature(double,double,double,double *);
+void	temperature(int,double *);
 void	abundance(double,double,double,double *);
 void	molNumDensity(double,double,double,double *);
 void	doppler(double,double,double, double *);

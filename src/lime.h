@@ -108,6 +108,10 @@
 #include "inpars.h"
 #include "defaults.h" /* includes lime_config.h */
 
+#ifdef SF3DMODELS
+#include "readdata.h" 
+#endif
+
 struct cpData {
   double *down,*temp;
   int collPartId,ntemp,ntrans,*lcl,*lcu,densityIndex;
