@@ -525,7 +525,7 @@ exit(1);
     }
     if(sf3dmodels)
       for(i=0;i<par->pIntensity;i++)
-	temperature((*gp)[i].x[0],(*gp)[i].x[1],(*gp)[i].x[2],(*gp)[i].t); //test
+	temperature((*gp)[i].x[0],(*gp)[i].x[1],(*gp)[i].x[2],(*gp)[i].t);
     else
       for(i=0;i<par->pIntensity;i++)
 	temperature((*gp)[i].x[0],(*gp)[i].x[1],(*gp)[i].x[2],(*gp)[i].t);
