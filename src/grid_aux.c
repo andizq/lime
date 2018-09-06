@@ -486,30 +486,59 @@ getEdgeVelocities(configInfo *par, struct grid *gp){
   int i,k,j,l;
   double vel[3], x[3];
   
-  for(i=0;i<par->ncell;i++){
-    gp[i].v1=malloc(3*gp[i].numNeigh*sizeof(double));
-    gp[i].v2=malloc(3*gp[i].numNeigh*sizeof(double));
-    gp[i].v3=malloc(3*gp[i].numNeigh*sizeof(double));
+  extern int sf3dmodels, *ID_picked;
+  
+  if(sf3dmodels)
+    for(i=0;i<par->ncell;i++){
+      gp[i].v1=malloc(3*gp[i].numNeigh*sizeof(double));
+      gp[i].v2=malloc(3*gp[i].numNeigh*sizeof(double));
+      gp[i].v3=malloc(3*gp[i].numNeigh*sizeof(double));
 
-    for(k=0;k<gp[i].numNeigh;k++){
-      for(j=0;j<3;j++) x[j]=gp[i].x[j];		
-      for(l=0;l<5;l++){
-        velocity(x[0],x[1],x[2],vel);	
+      for(k=0;k<gp[i].numNeigh;k++){
+	for(j=0;j<3;j++) x[j]=gp[i].x[j];		
+	for(l=0;l<5;l++){
+	  velocity(0.0,0.0,(double)ID_picked[i],vel);	
 
-        if (l==1) {
-	  gp[i].v1[3*k]=vel[0]; gp[i].v1[3*k+1]=vel[1]; gp[i].v1[3*k+2]=vel[2];
-        }
-        if (l==2) {
-          gp[i].v2[3*k]=vel[0]; gp[i].v2[3*k+1]=vel[1]; gp[i].v2[3*k+2]=vel[2];
-        }
-        if (l==3) {
-          gp[i].v3[3*k]=vel[0]; gp[i].v3[3*k+1]=vel[1]; gp[i].v3[3*k+2]=vel[2];
-        }
-		
-        for(j=0;j<3;j++) x[j]=x[j]+(gp[i].dir[k].xn[j]*gp[i].ds[k])/4.;
+	  if (l==1) {
+	    gp[i].v1[3*k]=vel[0]; gp[i].v1[3*k+1]=vel[1]; gp[i].v1[3*k+2]=vel[2];
+	  }
+	  if (l==2) {
+	    gp[i].v2[3*k]=vel[0]; gp[i].v2[3*k+1]=vel[1]; gp[i].v2[3*k+2]=vel[2];
+	  }
+	  if (l==3) {
+	    gp[i].v3[3*k]=vel[0]; gp[i].v3[3*k+1]=vel[1]; gp[i].v3[3*k+2]=vel[2];
+	  }
+	  
+	  for(j=0;j<3;j++) x[j]=x[j]+(gp[i].dir[k].xn[j]*gp[i].ds[k])/4.;
+	}
       }
     }
-  }
+
+  else
+    for(i=0;i<par->ncell;i++){
+      gp[i].v1=malloc(3*gp[i].numNeigh*sizeof(double));
+      gp[i].v2=malloc(3*gp[i].numNeigh*sizeof(double));
+      gp[i].v3=malloc(3*gp[i].numNeigh*sizeof(double));
+
+      for(k=0;k<gp[i].numNeigh;k++){
+	for(j=0;j<3;j++) x[j]=gp[i].x[j];		
+	for(l=0;l<5;l++){
+	  velocity(x[0],x[1],x[2],vel);	
+
+	  if (l==1) {
+	    gp[i].v1[3*k]=vel[0]; gp[i].v1[3*k+1]=vel[1]; gp[i].v1[3*k+2]=vel[2];
+	  }
+	  if (l==2) {
+	    gp[i].v2[3*k]=vel[0]; gp[i].v2[3*k+1]=vel[1]; gp[i].v2[3*k+2]=vel[2];
+	  }
+	  if (l==3) {
+	    gp[i].v3[3*k]=vel[0]; gp[i].v3[3*k+1]=vel[1]; gp[i].v3[3*k+2]=vel[2];
+	  }
+	  
+	  for(j=0;j<3;j++) x[j]=x[j]+(gp[i].dir[k].xn[j]*gp[i].ds[k])/4.;
+	}
+      }
+    }
 
   par->edgeVelsAvailable = 1;
 }

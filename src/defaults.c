@@ -10,6 +10,8 @@
 #include <math.h>
 #include "defaults.h" /* includes lime_config.h which defines configInfo */
 #include "ufunc_types.h" /* for the USERFUNC_* macros */
+#include "readdata.h"
+#include "mindistance.h"
 
 void
 default_density(double x, double y, double z, double *density){
@@ -78,11 +80,18 @@ Notes:
   double val[99],totalDensity=0.0,rSquared=0.0,fracDensity=0.0;
   int i;
 
+  int id_min;
+  extern int sf3dmodels;
+  
   rSquared = r[0]*r[0]+r[1]*r[1]+r[2]*r[2];
   if(rSquared>=par->radiusSqu)
     return 0.0;
 
-  density(r[0],r[1],r[2],val);
+  if(sf3dmodels){
+    id_min = find_id_min(r[0],xm,r[1],ym,r[2],zm);
+    density(0.0,0.0,(double)id_min,val);
+  }else density(r[0],r[1],r[2],val);
+
   for (i=0;i<par->numDensities;i++) totalDensity += val[i];
   fracDensity = pow(totalDensity,defaultDensyPower)/par->gridDensGlobalMax;
 

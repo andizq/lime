@@ -288,7 +288,8 @@ readOrBuildGrid(configInfo *par, struct grid **gp){
   extern int sf3dmodels; /* Already took True or False at main.c, 
 			    depending on the activation of the -S flag. */  
   unsigned int i_id;
-  int *ID_picked = malloc (sizeof(int) * par->ncell);    
+  extern int *ID_picked;
+  ID_picked = malloc (sizeof(int) * par->ncell);    
   
   par->dataFlags = 0;
   if(par->gridInFile!=NULL){
@@ -499,11 +500,12 @@ Generate the remaining values if needed. **Note** that we check a few of them to
     writeGridIfRequired(par, *gp, NULL, 2);
 
 
-  if (sf3dmodels){
+  if(sf3dmodels){
     for(i_id=0;i_id<par->ncell;i_id++){
       ID_picked[i_id] = find_id_min((*gp)[i_id].x[0], xm,
 				    (*gp)[i_id].x[1], ym,
 				    (*gp)[i_id].x[2], zm);
+      //printf("%d %d\n",i_id,ID_picked[i_id]);
     }
   }
 
@@ -513,10 +515,14 @@ Generate the remaining values if needed. **Note** that we check a few of them to
       (*gp)[i].dens = malloc(sizeof(double)*par->numDensities);
     
     
-    for(i=0;i<par->pIntensity;i++)
-      density((*gp)[i].x[0],(*gp)[i].x[1],(*gp)[i].x[2],(*gp)[i].dens);
-   
-    
+    if(sf3dmodels)
+      for(i=0;i<par->pIntensity;i++)
+	//density((*gp)[i].x[0],(*gp)[i].x[1],(*gp)[i].x[2],(*gp)[i].dens);
+	density(0.0,0.0,(double)ID_picked[i],(*gp)[i].dens);
+    else
+      for(i=0;i<par->pIntensity;i++)
+	density((*gp)[i].x[0],(*gp)[i].x[1],(*gp)[i].x[2],(*gp)[i].dens);
+
     for(i=par->pIntensity;i<par->ncell;i++){
       for(j=0;j<par->numDensities;j++)
         (*gp)[i].dens[j]=EPS; //************** what is the low but non zero value for? Probably to make sure no ills happen in case something gets divided by this?
@@ -541,11 +547,10 @@ exit(1);
     }
     if(sf3dmodels)
       for(i=0;i<par->pIntensity;i++)
-	temperature((*gp)[i].x[0],(*gp)[i].x[1],(*gp)[i].x[2],(*gp)[i].t);
-	//temperature(0.0,0.0,(double)ID_picked[i],(*gp)[i].t);
-    else{
+	temperature(0.0,0.0,(double)ID_picked[i],(*gp)[i].t);
+    else
       for(i=0;i<par->pIntensity;i++)
-	temperature((*gp)[i].x[0],(*gp)[i].x[1],(*gp)[i].x[2],(*gp)[i].t);}
+	temperature((*gp)[i].x[0],(*gp)[i].x[1],(*gp)[i].x[2],(*gp)[i].t);
     
     for(i=par->pIntensity;i<par->ncell;i++){
       (*gp)[i].t[0]=par->tcmb;
@@ -577,11 +582,19 @@ exit(1);
           }
         }
 
-        for(i=0;i<par->pIntensity;i++){
-          abundance((*gp)[i].x[0],(*gp)[i].x[1],(*gp)[i].x[2],dummyPointer);
-          for(si=0;si<par->nSpecies;si++)
-            (*gp)[i].mol[si].abun = dummyPointer[si];
-        }
+	if(sf3dmodels)
+	  for(i=0;i<par->pIntensity;i++){
+	    abundance(0.0,0.0,(double)ID_picked[i],dummyPointer);
+	    for(si=0;si<par->nSpecies;si++)
+	      (*gp)[i].mol[si].abun = dummyPointer[si];
+	  }
+	else
+	  for(i=0;i<par->pIntensity;i++){
+	    abundance((*gp)[i].x[0],(*gp)[i].x[1],(*gp)[i].x[2],dummyPointer);
+	    for(si=0;si<par->nSpecies;si++)
+	      (*gp)[i].mol[si].abun = dummyPointer[si];
+	  }
+
         for(i=par->pIntensity;i<par->ncell;i++){
           for(si=0;si<par->nSpecies;si++)
             (*gp)[i].mol[si].abun = 0.0;
@@ -601,11 +614,19 @@ exit(1);
           }
         }
 
-        for(i=0;i<par->pIntensity;i++){
-          molNumDensity((*gp)[i].x[0],(*gp)[i].x[1],(*gp)[i].x[2],dummyPointer);
-          for(si=0;si<par->nSpecies;si++)
-            (*gp)[i].mol[si].nmol = dummyPointer[si];
-        }
+	if(sf3dmodels)
+	  for(i=0;i<par->pIntensity;i++){
+	    molNumDensity(0.0,0.0,(double)ID_picked[i],dummyPointer);
+	    for(si=0;si<par->nSpecies;si++)
+	      (*gp)[i].mol[si].nmol = dummyPointer[si];
+	  }
+	else
+	  for(i=0;i<par->pIntensity;i++){
+	    molNumDensity((*gp)[i].x[0],(*gp)[i].x[1],(*gp)[i].x[2],dummyPointer);
+	    for(si=0;si<par->nSpecies;si++)
+	      (*gp)[i].mol[si].nmol = dummyPointer[si];
+	  }
+
         for(i=par->pIntensity;i<par->ncell;i++){
           for(si=0;si<par->nSpecies;si++)
             (*gp)[i].mol[si].nmol = 0.0;
@@ -628,8 +649,13 @@ exit(1);
         }
       }
 
-      for(i=0;i<par->pIntensity;i++)
-        doppler((*gp)[i].x[0],(*gp)[i].x[1],(*gp)[i].x[2],&(*gp)[i].dopb_turb);	
+      if(sf3dmodels)
+	for(i=0;i<par->pIntensity;i++)
+	  doppler(0.0,0.0,(double)ID_picked[i],&(*gp)[i].dopb_turb);	
+      else
+	for(i=0;i<par->pIntensity;i++)
+	  doppler((*gp)[i].x[0],(*gp)[i].x[1],(*gp)[i].x[2],&(*gp)[i].dopb_turb);
+
       for(i=par->pIntensity;i<par->ncell;i++)
         (*gp)[i].dopb_turb=0.;
 
@@ -638,13 +664,22 @@ exit(1);
 
     if(!allBitsSet(par->dataFlags, DS_mask_velocity)){
       /* There seems to be no way we can test if the user has set velocities properly because -ve component values are of course possible. */
-      for(i=0;i<par->pIntensity;i++)
-        velocity((*gp)[i].x[0],(*gp)[i].x[1],(*gp)[i].x[2],(*gp)[i].vel);
 
+      if(sf3dmodels){
+	for(i=0;i<par->pIntensity;i++)
+	  velocity(0.0,0.0,(double)ID_picked[i],(*gp)[i].vel);
       /* Set velocity values also for sink points (otherwise Delaunay ray-tracing has problems) */
-      for(i=par->pIntensity;i<par->ncell;i++)
-        velocity((*gp)[i].x[0],(*gp)[i].x[1],(*gp)[i].x[2],(*gp)[i].vel);
+	for(i=par->pIntensity;i<par->ncell;i++)
+	  velocity(0.0,0.0,(double)ID_picked[i],(*gp)[i].vel);
 
+      }else{
+	for(i=0;i<par->pIntensity;i++)
+	  velocity((*gp)[i].x[0],(*gp)[i].x[1],(*gp)[i].x[2],(*gp)[i].vel);
+      
+	/* Set velocity values also for sink points (otherwise Delaunay ray-tracing has problems) */
+	for(i=par->pIntensity;i<par->ncell;i++)
+	  velocity((*gp)[i].x[0],(*gp)[i].x[1],(*gp)[i].x[2],(*gp)[i].vel);
+      }
       par->dataFlags |= DS_mask_velocity;
     }
 
@@ -660,8 +695,13 @@ exit(1);
   if(!allBitsSet(par->dataFlags, DS_mask_magfield)){
     if(par->polarization){
       /* There seems to be no way we can test if the user has set B field values properly because -ve component values are of course possible. */
-      for(i=0;i<par->pIntensity;i++)
-        magfield((*gp)[i].x[0],(*gp)[i].x[1],(*gp)[i].x[2],(*gp)[i].B);
+      
+      if(sf3dmodels)
+	for(i=0;i<par->pIntensity;i++)
+	  magfield(0.0,0.0,(double)ID_picked[i],(*gp)[i].B);
+      else
+	for(i=0;i<par->pIntensity;i++)
+	  magfield((*gp)[i].x[0],(*gp)[i].x[1],(*gp)[i].x[2],(*gp)[i].B);
 
       par->dataFlags |= DS_mask_magfield;
 
@@ -685,8 +725,7 @@ exit(1);
 
   dumpGrid(par,*gp);
   free(dc);
+  //  free(ID_picked);
 
   freeArrayOfStrings(collPartNames, numCollPartRead);
 }
-
-

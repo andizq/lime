@@ -11,7 +11,7 @@
 
 #include "lime.h"
 #include "defaults.h"
-
+#include "mindistance.h"
 
 void
 popsin(configInfo *par, struct grid **gp, molData **md, int *popsdone){
@@ -22,6 +22,9 @@ popsin(configInfo *par, struct grid **gp, molData **md, int *popsdone){
   unsigned long numCells,nExtraSinks;
 
   (void)dummy;
+
+  extern int sf3dmodels, *ID_picked;
+  unsigned int i_id;
 
   if((fp=fopen(par->restart, "rb"))==NULL){
     if(!silent) bail_out("Error reading binary output populations file!");
@@ -140,8 +143,14 @@ exit(1);
 
   for(i=0;i<par->ncell; i++)
     (*gp)[i].dens = malloc(sizeof(double)*par->numDensities);
-  for(i=0;i<par->pIntensity;i++)
-    density((*gp)[i].x[0],(*gp)[i].x[1],(*gp)[i].x[2],(*gp)[i].dens);
+
+  if(sf3dmodels)
+    for(i=0;i<par->pIntensity;i++)
+      density(0.0,0.0,(double)ID_picked[i],(*gp)[i].dens);
+  else
+    for(i=0;i<par->pIntensity;i++)
+      density((*gp)[i].x[0],(*gp)[i].x[1],(*gp)[i].x[2],(*gp)[i].dens);
+
   for(i=par->pIntensity;i<par->ncell;i++){
     for(j=0;j<par->numDensities;j++)
       (*gp)[i].dens[j]=EPS; //************** what is the low but non zero value for? Probably to make sure no bad things happen in case something gets divided by this?
@@ -149,8 +158,13 @@ exit(1);
 
   par->dataFlags |= DS_mask_density;
 
-  for(i=0;i<par->pIntensity;i++)
-    temperature((*gp)[i].x[0],(*gp)[i].x[1],(*gp)[i].x[2],(*gp)[i].t);
+  if(sf3dmodels)
+    for(i=0;i<par->pIntensity;i++)
+      temperature(0.0,0.0,(double)ID_picked[i],(*gp)[i].t);
+  else
+    for(i=0;i<par->pIntensity;i++)
+      temperature((*gp)[i].x[0],(*gp)[i].x[1],(*gp)[i].x[2],(*gp)[i].t);
+
   for(i=par->pIntensity;i<par->ncell;i++){
     (*gp)[i].t[0]=par->tcmb;
     (*gp)[i].t[1]=par->tcmb;

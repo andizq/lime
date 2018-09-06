@@ -15,6 +15,7 @@ TODO:
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_permutation.h>
 #include <gsl/gsl_errno.h>
+#include "mindistance.h"
 
 /* Data concerning a single grid vertex which is passed from calculateJBar() to solveStatEq(). This data needs to be thread-safe. */
 typedef struct {
@@ -254,6 +255,9 @@ void calcGridLinesDustOpacity(configInfo *par, molData *md, double *lamtab\
   gsl_interp_accel *acc = NULL;
   double *knus=NULL, *dusts=NULL;
 
+  extern int sf3dmodels, *ID_picked;
+  unsigned int i_id;
+  
   if(par->dust != NULL){
     acc = gsl_interp_accel_alloc();
     spline = gsl_spline_alloc(gsl_interp_cspline,nEntries);
@@ -274,12 +278,24 @@ void calcGridLinesDustOpacity(configInfo *par, molData *md, double *lamtab\
                         , lamtab, kaptab, nEntries, spline, acc);
     }
 
-    for(id=0;id<par->ncell;id++){
-      gasIIdust(gp[id].x[0],gp[id].x[1],gp[id].x[2],&gtd);
-      calcDustData(par, gp[id].dens, md[si].freq, gtd, kappatab, md[si].nline, gp[id].t, knus, dusts);
-      for(iline=0;iline<md[si].nline;iline++){
-        gp[id].mol[si].cont[iline].knu  = knus[iline];
-        gp[id].mol[si].cont[iline].dust = dusts[iline];
+
+    if(sf3dmodels){
+      for(id=0;id<par->ncell;id++){
+	gasIIdust(0.0,0.0,(double)ID_picked[id],&gtd);
+	calcDustData(par, gp[id].dens, md[si].freq, gtd, kappatab, md[si].nline, gp[id].t, knus, dusts);
+	for(iline=0;iline<md[si].nline;iline++){
+	  gp[id].mol[si].cont[iline].knu  = knus[iline];
+	  gp[id].mol[si].cont[iline].dust = dusts[iline];
+	}
+      }
+    }else{
+      for(id=0;id<par->ncell;id++){
+	gasIIdust(gp[id].x[0],gp[id].x[1],gp[id].x[2],&gtd);
+	calcDustData(par, gp[id].dens, md[si].freq, gtd, kappatab, md[si].nline, gp[id].t, knus, dusts);
+	for(iline=0;iline<md[si].nline;iline++){
+	  gp[id].mol[si].cont[iline].knu  = knus[iline];
+	  gp[id].mol[si].cont[iline].dust = dusts[iline];
+	}
       }
     }
 
@@ -292,6 +308,7 @@ void calcGridLinesDustOpacity(configInfo *par, molData *md, double *lamtab\
     gsl_spline_free(spline);
     gsl_interp_accel_free(acc);
   }
+  free(ID_picked);
 }
 
 /*....................................................................*/

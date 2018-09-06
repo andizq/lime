@@ -12,6 +12,7 @@ TODO:
 
 #include "lime.h"
 #include "raythrucells.h"
+#include "mindistance.h"
 
 typedef struct {
   double x,y, *intensity, *tau;
@@ -42,6 +43,9 @@ void calcGridContDustOpacity(configInfo *par, const double freq\
   double *knus=NULL, *dusts=NULL;
   double *freqs=NULL;
 
+  extern int sf3dmodels, *ID_picked;
+  unsigned int i_id;
+
   kappatab = malloc(sizeof(*kappatab)*1);
   knus     = malloc(sizeof(*knus)    *1);
   dusts    = malloc(sizeof(*dusts)   *1);
@@ -58,12 +62,20 @@ void calcGridContDustOpacity(configInfo *par, const double freq\
     kappatab[0] = interpolateKappa(freq, lamtab, kaptab, nEntries, spline, acc);
   }
 
-  for(id=0;id<par->ncell;id++){
-    gasIIdust(gp[id].x[0],gp[id].x[1],gp[id].x[2],&gtd);
-    calcDustData(par, gp[id].dens, freqs, gtd, kappatab, 1, gp[id].t, knus, dusts); /* in aux.c. */
-    gp[id].cont.knu = knus[0];
-    gp[id].cont.dust = dusts[0];
-  }
+  if(sf3dmodels)
+    for(id=0;id<par->ncell;id++){
+      gasIIdust(0.0,0.0,(double)ID_picked[id],&gtd);
+      calcDustData(par, gp[id].dens, freqs, gtd, kappatab, 1, gp[id].t, knus, dusts); /* in aux.c. */
+      gp[id].cont.knu = knus[0];
+      gp[id].cont.dust = dusts[0];
+    }
+  else
+    for(id=0;id<par->ncell;id++){
+      gasIIdust(gp[id].x[0],gp[id].x[1],gp[id].x[2],&gtd);
+      calcDustData(par, gp[id].dens, freqs, gtd, kappatab, 1, gp[id].t, knus, dusts); /* in aux.c. */
+      gp[id].cont.knu = knus[0];
+      gp[id].cont.dust = dusts[0];
+    }
 
   if(par->dust != NULL){
     gsl_spline_free(spline);
@@ -203,6 +215,9 @@ if(!if(par->useVelFuncInRaytrace)): vel
   double remnantSnu,expDTau,brightnessIncrement;
   double projVels[nSteps],d,vel[DIM];
 
+  extern int sf3dmodels;
+  int ID_picked;
+  
   for(ichan=0;ichan<img[im].nchan;ichan++){
     ray.tau[ichan]=0.0;
     ray.intensity[ichan]=0.0;
@@ -259,11 +274,22 @@ if(!if(par->useVelFuncInRaytrace)): vel
       }
     } else {
       if(img[im].doline && par->useVelFuncInRaytrace){
-        for(i=0;i<nSteps;i++){
-          d = i*ds*oneOnNSteps;
-          velocity(x[0]+(dx[0]*d),x[1]+(dx[1]*d),x[2]+(dx[2]*d),vel);
-          projVels[i] = dotProduct3D(dx,vel);
-        }
+	
+	if(sf3dmodels)
+	  for(i=0;i<nSteps;i++){
+	    d = i*ds*oneOnNSteps;
+	    ID_picked = find_id_min(x[0]+(dx[0]*d),xm,
+				    x[1]+(dx[1]*d),ym,
+				    x[2]+(dx[2]*d),zm);
+	    velocity(0.0,0.0,(double)ID_picked,vel);
+	    projVels[i] = dotProduct3D(dx,vel);
+	  }
+	else
+	  for(i=0;i<nSteps;i++){
+	    d = i*ds*oneOnNSteps;
+	    velocity(x[0]+(dx[0]*d),x[1]+(dx[1]*d),x[2]+(dx[2]*d),vel);
+	    projVels[i] = dotProduct3D(dx,vel);
+	  }
       }
 
       /* Calculate first the continuum stuff because it is the same for all channels:
@@ -611,6 +637,9 @@ Note that this is called from within the multi-threaded block.
     int exitedFaceIs[nVertPerFace],fiEnteredCell;
   } *interCellKey=NULL;
 
+  extern int sf3dmodels;
+  int ID_picked;
+
   for(ichan=0;ichan<img[im].nchan;ichan++){
     ray.tau[ichan]=0.0;
     ray.intensity[ichan]=0.0;
@@ -863,7 +892,14 @@ At the moment I will fix the number of segments, but it might possibly be faster
           if(img[im].doInterpolateVels){
             projVelNew = doSegmentInterpScalar(projRayVels, (si + 1.0)*oneOnNumSegments);
           }else{
-            velocity(gips[2].x[0], gips[2].x[1], gips[2].x[2], vel);
+	    
+	    if(sf3dmodels){
+	      ID_picked = find_id_min(gips[2].x[0],xm,
+				      gips[2].x[1],ym,
+				      gips[2].x[2],zm);
+	      velocity(0.0,0.0,(double)ID_picked, vel);
+	    }else velocity(gips[2].x[0], gips[2].x[1], gips[2].x[2], vel);
+
             projVelRay = dotProduct3D(dir, vel);
           }
         }

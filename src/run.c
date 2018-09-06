@@ -12,6 +12,7 @@ TODO:
 #include <locale.h>
 #include "gridio.h" /* For countDensityCols() */
 #include "defaults.h"
+#include "mindistance.h"
 
 int defaultFuncFlags = 0;
 double defaultDensyPower = DENSITY_POWER;
@@ -237,6 +238,9 @@ Run through all the user functions and set flags in the global defaultFuncFlags 
   double dummyT[2],dummyTurbDop,dummyVel[DIM],dummyB[3],dummyG2d,dummyR[3],dummyNdens;
   int numDensities=0,i;
 
+  extern int sf3dmodels;
+  int ID_picked;
+  
 //**** should give them all values because you don't know what some screwy user routine might return.
 
   /* just to stop compiler warnings because this return value is currently unused. */
@@ -267,14 +271,27 @@ Run through all the user functions and set flags in the global defaultFuncFlags 
 
   for(i=0;i<MAX_N_COLL_PART;i++) dummyDens[i] = -1.0; /* We expect that no real function will return such values, so this may be used as an indicator for the number of values returned. */
 
-  density(      x, y, z, dummyDens);
-  temperature(  x, y, z, dummyT);
-  abundance(    x, y, z, dummyAbun);
-  molNumDensity(x, y, z, dummyNmol);
-  doppler(      x, y, z, &dummyTurbDop);
-  velocity(     x, y, z, dummyVel);
-  magfield(     x, y, z, dummyB);
-  gasIIdust(    x, y, z, &dummyG2d);
+  if(sf3dmodels){
+    ID_picked = find_id_min(x,xm,y,ym,z,zm);
+    density(      0.0, 0.0, (double)ID_picked, dummyDens);
+    temperature(  0.0, 0.0, (double)ID_picked, dummyT);
+    abundance(    0.0, 0.0, (double)ID_picked, dummyAbun);
+    molNumDensity(0.0, 0.0, (double)ID_picked, dummyNmol);
+    doppler(      0.0, 0.0, (double)ID_picked, &dummyTurbDop);
+    velocity(     0.0, 0.0, (double)ID_picked, dummyVel);
+    magfield(     0.0, 0.0, (double)ID_picked, dummyB);
+    gasIIdust(    0.0, 0.0, (double)ID_picked, &dummyG2d);
+    
+  }else{
+    density(      x, y, z, dummyDens);
+    temperature(  x, y, z, dummyT);
+    abundance(    x, y, z, dummyAbun);
+    molNumDensity(x, y, z, dummyNmol);
+    doppler(      x, y, z, &dummyTurbDop);
+    velocity(     x, y, z, dummyVel);
+    magfield(     x, y, z, dummyB);
+    gasIIdust(    x, y, z, &dummyG2d);
+  }
 
   dummyNdens = gridDensity(par, dummyR);
 
@@ -519,7 +536,8 @@ exit(1);
       */
       for(i=0;i<DIM;i++) r[i] = 0.0;
       tempPointDensity = gridDensity(par, r);
-
+      
+      //printf("%lf\n",tempPointDensity);
       if(isinf(tempPointDensity) || isnan(tempPointDensity)){
         if(!silent) warning("There is a singularity at the origin of the gridDensity() function.");
       }else if(tempPointDensity<=0.0){
