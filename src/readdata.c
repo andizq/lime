@@ -4,9 +4,9 @@ void readDatatab(){
 
   int noo;
 
+  printf("*** Looking for sf3dmodels input...\n");
   FILE *gridsize = fopen("npoints.dat", "r");
   fscanf(gridsize,"%d %d %d %d",&Nx,&Ny,&Nz,&Ndata);
-  printf("Nx,Ny,Nz,N: %d %d %d %d\n",Nx,Ny,Nz,Ndata);
   xm = malloc (sizeof(double) * Nx);
   FILE *fx  = fopen("x.dat", "r");
   for( noo = 0; noo < Nx; noo++ ){
@@ -48,6 +48,9 @@ void readDatatab(){
 
   FILE *fp  = fopen("datatab.dat", "r");
 
+  printf("*** Found it. Reading the data...\n");
+  printf("   (Grid info. --> Nx,Ny,Nz,N: %d %d %d %d)\n",Nx,Ny,Nz,Ndata);
+
   for( noo = 0; noo < Ndata; noo++ ){
 
     fscanf(fp,"%d %lf %lf %lf %lf %lf %lf %lf",
@@ -55,6 +58,8 @@ void readDatatab(){
     
   }
   
+  printf("*** The data was read succesfully from 'x.dat' 'y.dat' 'z.dat' 'npoints.dat' 'datatab.dat'\n");
+
   fclose(fx);
   fclose(fy);
   fclose(fz);

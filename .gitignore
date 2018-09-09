@@ -13,6 +13,14 @@ example/*.dat
 example/*_archive
 example/vlog.txt
 
+example_sf3dmodels/*.vtk
+example_sf3dmodels/*.pop
+example_sf3dmodels/*.fits*
+example_sf3dmodels/lime_*.x
+example_sf3dmodels/*.dat
+example_sf3dmodels/*_archive
+example_sf3dmodels/vlog.txt
+
 # Ignore html doc files
 doc/*.html
 

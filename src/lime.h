@@ -108,9 +108,7 @@
 #include "inpars.h"
 #include "defaults.h" /* includes lime_config.h */
 
-#ifdef SF3DMODELS
-#include "readdata.h" 
-#endif
+#include "readdata.h" /* SF3DMODELS */
 
 struct cpData {
   double *down,*temp;
