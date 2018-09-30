@@ -17,7 +17,7 @@ input(inputPars *par, image *img){
   /*
    * Basic parameters. See cheat sheet for details.
    */
-  par->radius                   = 500*AU;
+  par->radius                   = 495*AU;
   par->minScale                 = 2.5*AU; // 2 * sizex / Nx / 2
   par->pIntensity               = 20000; 
   par->sinkPoints               = 5000; 

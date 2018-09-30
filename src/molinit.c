@@ -61,7 +61,7 @@ checkFirstLineMolDat(FILE *fp, char *moldatfile){
 exit(1);
   }
 
-  if(strncmp(string, expectedLine, strlen(expectedLine))!=0){
+  if(strncmp(string, expectedLine, strlen(expectedLine))!=0){    
     if(!silent){
       sprintf(message, "Bad format first line of moldat file %s.", moldatfile);
       bail_out(message);
