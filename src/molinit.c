@@ -52,6 +52,7 @@ checkFirstLineMolDat(FILE *fp, char *moldatfile){
   const int sizeI=200;
   char string[sizeI],message[STR_LEN_0];
   char *expectedLine="!MOLECULE";
+  char *expectedLine_min="!molecule";
 
   if(fgets(string, sizeI, fp)==NULL){
     if(!silent){
@@ -61,7 +62,8 @@ checkFirstLineMolDat(FILE *fp, char *moldatfile){
 exit(1);
   }
 
-  if(strncmp(string, expectedLine, strlen(expectedLine))!=0){    
+  if(strncmp(string, expectedLine, strlen(expectedLine))!=0 &&
+     strncmp(string, expectedLine_min, strlen(expectedLine_min))!=0){    
     if(!silent){
       sprintf(message, "Bad format first line of moldat file %s.", moldatfile);
       bail_out(message);
