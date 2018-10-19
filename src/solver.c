@@ -255,7 +255,8 @@ void calcGridLinesDustOpacity(configInfo *par, molData *md, double *lamtab\
   gsl_interp_accel *acc = NULL;
   double *knus=NULL, *dusts=NULL;
 
-  extern int sf3dmodels, *ID_picked;
+  extern _Bool sf3dmodels; 
+  extern unsigned int *ID_picked;
   unsigned int i_id;
   
   if(par->dust != NULL){

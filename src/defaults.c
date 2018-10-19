@@ -81,7 +81,7 @@ Notes:
   int i;
 
   int id_min;
-  extern int sf3dmodels;
+  extern _Bool sf3dmodels;
   
   rSquared = r[0]*r[0]+r[1]*r[1]+r[2]*r[2];
   if(rSquared>=par->radiusSqu)

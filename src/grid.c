@@ -285,12 +285,15 @@ readOrBuildGrid(configInfo *par, struct grid **gp){
   unsigned long numCells;
   char **collPartNames=NULL,message[STR_LEN_0];
   
-  extern int sf3dmodels; /* Already took True or False at main.c, 
-			    depending on the activation of the -S flag. */  
+  //extern _Bool sf3dmodels; /* Already took True or False at main.c, 
+  //		    depending on the activation of the -S flag. */  
   unsigned int i_id;
-  extern int *ID_picked;
-  ID_picked = malloc (sizeof(int) * par->ncell);    
   
+  if(sf3dmodels) {
+    extern unsigned int *ID_picked; /* Global variable. Filled for further usage if sf3dmodels */
+    ID_picked = malloc (sizeof(int) * par->ncell);    
+  }
+
   par->dataFlags = 0;
   if(par->gridInFile!=NULL){
     readGridWrapper(par, gp, &collPartNames, &numCollPartRead);

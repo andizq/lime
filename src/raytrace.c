@@ -43,7 +43,8 @@ void calcGridContDustOpacity(configInfo *par, const double freq\
   double *knus=NULL, *dusts=NULL;
   double *freqs=NULL;
 
-  extern int sf3dmodels, *ID_picked;
+  extern _Bool sf3dmodels; 
+  extern unsigned int *ID_picked;
   unsigned int i_id;
 
   kappatab = malloc(sizeof(*kappatab)*1);
@@ -215,8 +216,8 @@ if(!if(par->useVelFuncInRaytrace)): vel
   double remnantSnu,expDTau,brightnessIncrement;
   double projVels[nSteps],d,vel[DIM];
 
-  extern int sf3dmodels;
-  int ID_picked;
+  extern _Bool sf3dmodels;
+  unsigned int ID_picked;
   
   for(ichan=0;ichan<img[im].nchan;ichan++){
     ray.tau[ichan]=0.0;
@@ -637,8 +638,8 @@ Note that this is called from within the multi-threaded block.
     int exitedFaceIs[nVertPerFace],fiEnteredCell;
   } *interCellKey=NULL;
 
-  extern int sf3dmodels;
-  int ID_picked;
+  extern _Bool sf3dmodels;
+  unsigned int ID_picked;
 
   for(ichan=0;ichan<img[im].nchan;ichan++){
     ray.tau[ichan]=0.0;

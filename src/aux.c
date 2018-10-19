@@ -269,8 +269,10 @@ void calcDustData(configInfo *par, double *dens, double *freqs\
 
   if(par->collPartUserSetFlags==0){ /* this means the user did not set any of the collision-partner-related parameters. Use the old formula. */
     dustToGas = AMU*2.4*dens[0]/gtd;
+    //printf("HELLO FROM Standard weighting");
   }else{
     gasMassDensityAMUs = 0.0;
+    //printf("HELLO FROM Set weighting");
     for(di=0;di<par->numDensities;di++)
       gasMassDensityAMUs += dens[di]*par->collPartMolWeights[di];
 

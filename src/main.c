@@ -16,10 +16,9 @@ int silent = 0;
 #endif
 
 #ifdef SF3DMODELS
-int sf3dmodels = 1;
+_Bool sf3dmodels = 1;
 #else
-int sf3dmodels = 0;
-void readDatatab();
+_Bool sf3dmodels = 0;
 #endif
 
 /*....................................................................*/
@@ -154,6 +153,8 @@ int main() {
 
   if(sf3dmodels) readDatatab();
 
+  //printf("Storage size for short : %d \n", sizeof(unsigned short));
+  
   nImages = initParImg(&par, &img);
 
   status = run(par, img, nImages);
@@ -167,6 +168,7 @@ exit(1);
 
   free(img);
   freeInputPars(&par);
+  if(sf3dmodels) freeDatatab();
 
   return 0;
 }

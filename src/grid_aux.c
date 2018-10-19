@@ -486,7 +486,8 @@ getEdgeVelocities(configInfo *par, struct grid *gp){
   int i,k,j,l;
   double vel[3], x[3];
   
-  extern int sf3dmodels, *ID_picked;
+  extern _Bool sf3dmodels;
+  extern unsigned int *ID_picked;
   
   if(sf3dmodels)
     for(i=0;i<par->ncell;i++){

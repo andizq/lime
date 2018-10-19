@@ -238,8 +238,8 @@ Run through all the user functions and set flags in the global defaultFuncFlags 
   double dummyT[2],dummyTurbDop,dummyVel[DIM],dummyB[3],dummyG2d,dummyR[3],dummyNdens;
   int numDensities=0,i;
 
-  extern int sf3dmodels;
-  int ID_picked;
+  extern _Bool sf3dmodels;
+  unsigned int ID_picked;
   
 //**** should give them all values because you don't know what some screwy user routine might return.
 
