@@ -1,7 +1,6 @@
 #include "readdata.h"
 
-double **defcols2read(unsigned short *cols,
-		      struct DATA *sf3d) {
+double **defcols2read(unsigned short *cols) {
 
   unsigned short noo, count = 0, foo = 4242;
   double **data;
@@ -13,10 +12,7 @@ double **defcols2read(unsigned short *cols,
       printf("ERROR (sf3dmodels input): Missing ids column, it MUST be provided by the user.\n");
       exit(1);
     }
-    if (foo == 4242){
-      printf("breaking \n");
-      break;
-    }
+    if (foo == 4242) break;
     count++;
   }
   data = (double **)malloc(count * sizeof(double *));
@@ -94,20 +90,59 @@ double **defcols2read(unsigned short *cols,
 
 }
 
+void readDatatab2() {
+
+  unsigned int noo, i, *id;
+  unsigned short j, cols = 0;
+  double **data;
+
+  printf("*** Looking for sf3dmodels input...\n");
+  FILE *gridsize = fopen("npoints.dat", "r");
+  fscanf(gridsize,"%d %d %d %d",&Nx,&Ny,&Nz,&Ndata);
+
+  xm = malloc (sizeof(double) * Nx);
+  FILE *fx  = fopen("x.dat", "r");
+  for( noo = 0; noo < Nx; noo++ ) fscanf(fx,"%lf",&xm[noo]);
+
+  ym = malloc (sizeof(double) * Ny);
+  FILE *fy  = fopen("y.dat", "r");
+  for( noo = 0; noo < Ny; noo++ ) fscanf(fy,"%lf",&ym[noo]);
+
+  zm = malloc (sizeof(double) * Nz);
+  FILE *fz  = fopen("z.dat", "r");
+  for( noo = 0; noo < Nz; noo++ ) fscanf(fz,"%lf",&zm[noo]);
+
+  sf3d = malloc(sizeof(struct sf3d_data));  
+  data = defcols2read(&cols);
+  id = sf3d->id;
+  sf3d->cols = cols;
+  
+  FILE *fp  = fopen("datatab.dat", "r");
+
+  printf("*** Found it. Reading the data...\n");
+  printf("   (Grid info. --> Nx,Ny,Nz,N: %d %d %d %d)\n",Nx,Ny,Nz,Ndata);
+  
+  for (i = 0; i < Ndata; i++) {
+    fscanf(fp, "%d", &id[i]);
+    for (j = 1; j < cols; j++) {
+      fscanf(fp, "%lf", &data[j][i]);
+    }
+  }
+  
+  printf("*** The data was read succesfully from 'x.dat' 'y.dat' 'z.dat' 'npoints.dat' 'datatab.dat'\n");
+
+  fclose(fx);
+  fclose(fy);
+  fclose(fz);
+  fclose(fp);
+  
+}
+
 
 void readDatatab() {
 
-  unsigned int noo, *id;
-  unsigned short cols = 0;
-  struct DATA *sf3d = malloc(sizeof(struct DATA));
-  double **data;
+  unsigned int noo;
   
-  data = defcols2read(&cols,sf3d);
-  id = sf3d->id;
-  printf("%lf\n",data[2][0]);
-  printf("%lf\n",sf3d->dens_p_H2[0]);
-  printf("%d\n",cols);
-
   printf("*** Looking for sf3dmodels input...\n");
   FILE *gridsize = fopen("npoints.dat", "r");
   fscanf(gridsize,"%d %d %d %d",&Nx,&Ny,&Nz,&Ndata);
