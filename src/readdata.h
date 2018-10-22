@@ -20,6 +20,7 @@
 #define SF3D_abundance      12
 #define SF3D_gtdratio       13
 #define SF3D_max_cols       14
+//add temp_gas, temp_dust instead of just temperature
 
 struct sf3d_data{
   unsigned int *id;
