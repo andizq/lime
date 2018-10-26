@@ -595,8 +595,15 @@ exit(1);
           }
         }
       }
+
+      /* ADDED BY AFIC FROM VERSION 1.6 TO ALLOW THE USER SET THE GLOBAL MAX VALUE */
+      for(i=0;i<par->numGridDensMaxima;i++)
+	if(par->gridDensMaxValues[i]>tempPointDensity) par->gridDensGlobalMax = par->gridDensMaxValues[i];
+
     }
   }
+
+  printf("==> DensGlobalMax^%.2f = %lf\n\n", DENSITY_POWER, par->gridDensGlobalMax);
 
   for(i=0;i<NUM_GRID_STAGES;i++){
     if(par->gridOutFiles[i] != NULL)

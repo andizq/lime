@@ -471,8 +471,9 @@ exit(1);
     gsl_rng_free(randGen);
 
     if(par->samplingAlgorithm==0){
-      smooth(par,*gp);
+      smooth(par,*gp); //AFIC: This function reorganizes very close points together according to the par->minScale parameter
       if(!silent) printDone(5);
+      //if(!silent) printf("   NOT SMOOTHED!\n\n");
     }
 
     par->dataFlags |= DS_mask_1;
