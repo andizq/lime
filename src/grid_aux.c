@@ -91,9 +91,11 @@ void calcGridMolDensities(configInfo *par, struct grid **gp){
   for(id=0;id<par->ncell;id++){
     for(ispec=0;ispec<par->nSpecies;ispec++){
       (*gp)[id].mol[ispec].nmol = 0.0;
-      for(i=0;i<par->numDensities;i++)
+      for(i=0;i<par->numDensities;i++){
         (*gp)[id].mol[ispec].nmol += (*gp)[id].mol[ispec].abun*(*gp)[id].dens[i]\
                                     *par->nMolWeights[i];
+	//printf("%f from grid_aux.c\n",par->nMolWeights[i]);
+      }
     }
   }
 }

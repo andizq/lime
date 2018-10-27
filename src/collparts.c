@@ -405,8 +405,12 @@ The same backward-compatible guesses are made here as for par->collPartIds in th
   if(par->collPartMolWeights==NULL){ /* Then load it from the LAMDA mol weights. */
     par->collPartMolWeights=malloc(sizeof(*par->collPartMolWeights)*par->numDensities);
     for(i=0;i<par->numDensities;i++)
-      par->collPartMolWeights[i] = lamdaMolWeights[par->collPartIds[i]-1];
+      { 
+	par->collPartMolWeights[i] = lamdaMolWeights[par->collPartIds[i]-1];
+	printf("collPartMolWeight[%d] = %f from collparts.c\n",i,par->collPartMolWeights[i]);
+      }
   }
+
 }
 
 

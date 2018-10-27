@@ -260,6 +260,11 @@ void calcDustData(configInfo *par, double *dens, double *freqs\
   double tKelvin,gasMassDensityAMUs,dustToGas;
   int di,iline;
 
+  /* AFIC added the following three lines */
+  double lamdaMolWeights[] = {2.0159,2.0159,2.0159,5.486e-4,1.00794,4.0026,1.00739};
+  char *lamdaNames[] = {"H2","p-H2","o-H2","electrons","H","He","H+"};
+  int i;
+
   /* Check if input model supplies a dust temperature. Otherwise use the kinetic temperature. */
   if(tsKelvin[1]<=0.0) { /* Flags that the user has not set it. */
     tKelvin = tsKelvin[0];
@@ -267,13 +272,46 @@ void calcDustData(configInfo *par, double *dens, double *freqs\
     tKelvin = tsKelvin[1];
   }
 
-  if(par->collPartUserSetFlags==0){ /* this means the user did not set any of the collision-partner-related parameters. Use the old formula. */
+  if(par->collPartUserSetFlags==0){ 
+    /* this means the user did not set any of the collision-partner-related parameters. 
+     * i.e. one out of par->collPartIds[i], par->collPartNames[i], par->nMolWeights[i] or par->collPartMolWeights[i].  
+     * Use the old formula. */
+    //printf("HELLO FROM Standard weighting\n");
     dustToGas = AMU*2.4*dens[0]/gtd;
-    //printf("HELLO FROM Standard weighting");
+  
   }else{
+    //printf("HELLO FROM Set weighting\n");
+    
+    /* AFIC copied and pasted the last block of collparts.c here. 
+     * When there are line and dust images defined together in the model.c script, LIME
+     * seems to be first entering here rather than in collparts.c. Thus, 
+     * par->collPartMolWeights==NULL and the execution falls into a Segmentation
+     * fault unless no collision-partner-related parameters are set at all (i.e. par->collPartUserSetFlags==0),
+     * but that's a very particular case almost never satisfied. 
+     * If this block is executed, the last block of collparts.c will not be.
+     */
+
+    if(par->collPartNames==NULL){ /* Then load it from the LAMDA names. */
+      par->collPartNames=malloc(sizeof(*par->collPartNames)*par->numDensities);
+      for(i=0;i<par->numDensities;i++){
+	copyInparStr(lamdaNames[par->collPartIds[i]-1], &(par->collPartNames[i]));
+	printf("collPartNames[%d] = %s from aux.c\n",i,par->collPartNames[i]);
+      }
+    }
+
+    if(par->collPartMolWeights==NULL){ /* Then load it from the LAMDA mol weights. */
+      par->collPartMolWeights=malloc(sizeof(*par->collPartMolWeights)*par->numDensities);
+      for(i=0;i<par->numDensities;i++)
+	{ 
+	  par->collPartMolWeights[i] = lamdaMolWeights[par->collPartIds[i]-1];
+	  printf("collPartMolWeight[%d] = %f from aux.c\n",i,par->collPartMolWeights[i]);
+	}
+    }
+    /*************************************************************/
+
     gasMassDensityAMUs = 0.0;
-    //printf("HELLO FROM Set weighting");
     for(di=0;di<par->numDensities;di++)
+      //printf("%f\n",par->collPartMolWeights[di]);
       gasMassDensityAMUs += dens[di]*par->collPartMolWeights[di];
 
     dustToGas = AMU*gasMassDensityAMUs/gtd;
