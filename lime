@@ -28,6 +28,8 @@ function usage {
     echo "   -t           Compile with debugging and fixed RNG seeds"
     echo "   -n           Turn off ncurses output"
     echo "   -p NTHREADS  Run in parallel with NTHREADS threads (default: 1)"
+    echo "   -S           Model functions from sf3dmodels output"
+    echo "   -G           Fixed grid from sf3dmodels output (turns off random Lime grid points and smoothing)"
     echo ""
     echo "See <http://lime.readthedocs.org> for more information."
     echo "Report bugs to <http://github.com/lime-rt/lime/issues>."
@@ -37,11 +39,12 @@ function tip {
     echo "Try 'lime -h' for more information."
 }
 
-options=":Vfnstp:hS"
+options=":Vfnstp:hSG"
 cpp_flags=""
 verbose="yes"
 do_test="no"
 sf3dmodels="no"
+fixed_grid="no"
 
 while getopts ${options} opt; do
     case $opt in
@@ -78,6 +81,9 @@ while getopts ${options} opt; do
 	S)
 	    sf3dmodels="yes"
 	    ;;
+	G)
+	    fixed_grid="yes"
+	    ;;
 	\?)
 	    echo "lime: error: unknown option" >&2
 	    tip
@@ -100,7 +106,7 @@ export WORKDIR=$PWD
 
 # Compile the code
 pushd ${PATHTOLIME} >> /dev/null
-make -s EXTRACPPFLAGS="${cpp_flags}" MODELS=$WORKDIR/$1 TARGET=$WORKDIR/lime_$$.x DOTEST=$do_test VERBOSE=$verbose SF3DMODELS=$sf3dmodels
+make -s EXTRACPPFLAGS="${cpp_flags}" MODELS=$WORKDIR/$1 TARGET=$WORKDIR/lime_$$.x DOTEST=$do_test VERBOSE=$verbose SF3DMODELS=$sf3dmodels FIXED_GRID=$fixed_grid
 # USEHDF5="yes"
 make -s limeclean
 

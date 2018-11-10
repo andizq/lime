@@ -238,7 +238,7 @@ Run through all the user functions and set flags in the global defaultFuncFlags 
   double dummyT[2],dummyTurbDop,dummyVel[DIM],dummyB[3],dummyG2d,dummyR[3],dummyNdens;
   int numDensities=0,i;
 
-  extern _Bool sf3dmodels;
+  //extern _Bool sf3dmodels;
   unsigned int ID_picked;
   
 //**** should give them all values because you don't know what some screwy user routine might return.
@@ -272,7 +272,8 @@ Run through all the user functions and set flags in the global defaultFuncFlags 
   for(i=0;i<MAX_N_COLL_PART;i++) dummyDens[i] = -1.0; /* We expect that no real function will return such values, so this may be used as an indicator for the number of values returned. */
 
   if(sf3dmodels){
-    ID_picked = find_id_min(x,xm,y,ym,z,zm);
+    if(fixed_grid) ID_picked = 0;
+    else ID_picked = find_id_min(x,xm,y,ym,z,zm);
     density(      0.0, 0.0, (double)ID_picked, dummyDens);
     temperature(  0.0, 0.0, (double)ID_picked, dummyT);
     abundance(    0.0, 0.0, (double)ID_picked, dummyAbun);

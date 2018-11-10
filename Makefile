@@ -74,6 +74,9 @@ endif
 ifeq (${SF3DMODELS},yes)
   CCFLAGS += -DSF3DMODELS
 endif
+ifeq (${FIXED_GRID},yes)
+  CCFLAGS += -DFIXED_GRID
+endif
 #------------------------
 
 ifeq (${USEHDF5},yes)

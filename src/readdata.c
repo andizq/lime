@@ -26,6 +26,18 @@ double **defcols2read(unsigned short *cols) {
     if (foo == SF3D_id){
       sf3d->id = malloc (sizeof(unsigned int) * Ndata);      
     }
+    if (foo == SF3D_x){
+      sf3d->x = malloc (sizeof(double) * Ndata);
+      data[noo] = sf3d->x;
+    }
+    if (foo == SF3D_y){
+      sf3d->y = malloc (sizeof(double) * Ndata);
+      data[noo] = sf3d->y;
+    }
+    if (foo == SF3D_z){
+      sf3d->z = malloc (sizeof(double) * Ndata);
+      data[noo] = sf3d->z;
+    }
     if (foo == SF3D_dens_H2){
       sf3d->dens_H2 = malloc (sizeof(double) * Ndata);
       data[noo] = sf3d->dens_H2;
@@ -96,9 +108,18 @@ void readDatatab2() {
   unsigned short j, cols = 0;
   double **data;
 
+  printf("sf3dmodels: %d, fixed_grid: %d\n",sf3dmodels,fixed_grid);
   printf("*** Looking for sf3dmodels input...\n");
+
+  if(!fixed_grid){
+
   FILE *gridsize = fopen("npoints.dat", "r");
   fscanf(gridsize,"%d %d %d %d",&Nx,&Ny,&Nz,&Ndata);
+
+  sf3d = malloc(sizeof(struct sf3d_data));  
+  data = defcols2read(&cols);
+  id = sf3d->id;
+  sf3d->cols = cols;
 
   xm = malloc (sizeof(double) * Nx);
   FILE *fx  = fopen("x.dat", "r");
@@ -111,14 +132,9 @@ void readDatatab2() {
   zm = malloc (sizeof(double) * Nz);
   FILE *fz  = fopen("z.dat", "r");
   for( noo = 0; noo < Nz; noo++ ) fscanf(fz,"%lf",&zm[noo]);
-
-  sf3d = malloc(sizeof(struct sf3d_data));  
-  data = defcols2read(&cols);
-  id = sf3d->id;
-  sf3d->cols = cols;
   
-  FILE *fp  = fopen("datatab.dat", "r");
-
+  FILE *fp  = fopen("datatab.dat", "r");  
+  
   printf("*** Found it. Reading the data...\n");
   printf("   (Grid info. --> Nx,Ny,Nz,N: %d %d %d %d)\n",Nx,Ny,Nz,Ndata);
   
@@ -134,7 +150,52 @@ void readDatatab2() {
   fclose(fx);
   fclose(fy);
   fclose(fz);
+  fclose(gridsize);
   fclose(fp);
+
+  }else{
+  
+    FILE *gridsize = fopen("npoints.dat", "r");
+    fscanf(gridsize,"%d %d %d %d",&Nx,&Ny,&Nz,&Ndata);
+    
+    sf3d = malloc(sizeof(struct sf3d_data));  
+    data = defcols2read(&cols);
+    id = sf3d->id;
+    sf3d->cols = cols;
+    
+    xm = malloc (sizeof(double) * Nx);
+    FILE *fx  = fopen("x.dat", "r");
+    for( noo = 0; noo < Nx; noo++ ) fscanf(fx,"%lf",&xm[noo]);
+    
+    ym = malloc (sizeof(double) * Ny);
+    FILE *fy  = fopen("y.dat", "r");
+    for( noo = 0; noo < Ny; noo++ ) fscanf(fy,"%lf",&ym[noo]);
+    
+    zm = malloc (sizeof(double) * Nz);
+    FILE *fz  = fopen("z.dat", "r");
+    for( noo = 0; noo < Nz; noo++ ) fscanf(fz,"%lf",&zm[noo]);
+    
+    FILE *fp  = fopen("datatab.dat", "r");
+    
+    printf("*** Found it. Reading the data...\n");
+
+    for (i = 0; i < Ndata; i++) {
+      fscanf(fp, "%d", &id[i]);
+      for (j = 1; j < cols; j++) {
+	fscanf(fp, "%lf", &data[j][i]);
+      }
+    }
+
+    printf("*** The data was read succesfully from 'npoints.dat' 'datatab.dat'\n");
+
+    fclose(fx);
+    fclose(fy);
+    fclose(fz);
+    fclose(gridsize);
+    fclose(fp);
+    printf("%f,%d,%d\n",sf3d->x[Ndata-1],cols,Ndata);
+  }
+
   
 }
 

@@ -21,6 +21,12 @@ _Bool sf3dmodels = 1;
 _Bool sf3dmodels = 0;
 #endif
 
+#ifdef FIXED_GRID
+_Bool fixed_grid = 1;
+#else
+_Bool fixed_grid = 0;
+#endif
+
 /*....................................................................*/
 int
 initParImg(inputPars *par, image **img)
@@ -151,8 +157,9 @@ int main() {
 
   (void)status; // just to stop compiler warnings because this return value is currently unused.
 
-  if(sf3dmodels) readDatatab();//readDatatab2();
-
+  if(sf3dmodels) readDatatab2();//readDatatab();
+  
+  
   //printf("Storage size for short : %d \n", sizeof(unsigned short));
   
   nImages = initParImg(&par, &img);

@@ -1,4 +1,6 @@
-#include "lime.h"
+#include <math.h>
+#include "constants.h"
+#include "readdata.h"
 #include "mindistance.h"
 
 double index_min(double u, double *um, int Nu){
@@ -6,6 +8,13 @@ double index_min(double u, double *um, int Nu){
   double mindist,distu;
 
   mindist=1000000*AU;
+
+  //printf("Hey from index_min() at mindistance.c\n",mindist);
+  /*if (mindist < par->radius){
+    printf("%f\n",mindist);
+  }
+  */
+
   unsigned int i,j;
   for( i = 0; i < Nu; i++){
     distu = fabs(u-um[i]);

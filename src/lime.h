@@ -109,6 +109,7 @@
 #include "defaults.h" /* includes lime_config.h */
 
 #include "readdata.h" /* SF3DMODELS */
+#include "mindistance.h" /* SF3DMODELS */
 
 struct cpData {
   double *down,*temp;

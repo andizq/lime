@@ -13,7 +13,8 @@ TODO:
 #include "tree_random.h"
 #include "gridio.h"
 #include "defaults.h"
-#include "mindistance.h"
+//#include "mindistance.h"
+
 /*....................................................................*/
 void
 sanityCheckOfRead(const int status, configInfo *par, struct gridInfoType gridInfoRead){
@@ -170,6 +171,28 @@ int pointEvaluation(configInfo *par, const double uniformRandom, double *r){
 }
 
 /*....................................................................*/
+void readFixedGrid(configInfo *par, const unsigned int desiredNumPoints\
+  , double (*outRandLocations)[DIM]){
+
+  int di;
+  unsigned int i_u;
+  double progFraction;
+  double x[DIM];
+  printf("Got into readFixedGrid\n");
+  /* Sample pIntensity number of points */
+  for(i_u=0;i_u<desiredNumPoints;i_u++){
+    x[0] = sf3d->x[i_u];
+    x[1] = sf3d->y[i_u];
+    if(DIM==3) x[2] = sf3d->z[i_u];
+    for(di=0;di<DIM;di++)
+      outRandLocations[i_u][di]=x[di];
+    progFraction = (double)i_u/((double)desiredNumPoints-1);
+    if(!silent) progressbar(progFraction, 4);
+  }
+
+}
+
+/*....................................................................*/
 void randomsViaRejection(configInfo *par, const unsigned int desiredNumPoints, gsl_rng *randGen\
   , double (*outRandLocations)[DIM]){
 
@@ -286,11 +309,12 @@ readOrBuildGrid(configInfo *par, struct grid **gp){
   char **collPartNames=NULL,message[STR_LEN_0];
   
   //extern _Bool sf3dmodels; /* Already took True or False at main.c, 
-  //		    depending on the activation of the -S flag. */  
+  //                            depending on the activation of the -S flag. */  
   unsigned int i_id;
   
   if(sf3dmodels) {
-    extern unsigned int *ID_picked; /* Global variable. Filled for further usage if sf3dmodels */
+    extern unsigned int *ID_picked; /* Global variable for further usage if sf3dmodels. Filled in with the ids picked by Lime */
+    //printf("%d %d %d\n",par->ncell,par->pIntensity,par->sinkPoints);
     ID_picked = malloc (sizeof(int) * par->ncell);    
   }
 
@@ -388,6 +412,10 @@ Generate the grid point locations.
     else
       gsl_rng_set(randGen,time(0));
 
+    if(fixed_grid){
+      readFixedGrid(par, (unsigned int)par->pIntensity, outRandLocations);
+    }else{
+
     if(par->samplingAlgorithm==0){
       randomsViaRejection(par, (unsigned int)par->pIntensity, randGen, outRandLocations);
 
@@ -432,6 +460,8 @@ Generate the grid point locations.
 exit(1);
     }
 
+    }
+
     for(k=0;k<par->pIntensity;k++){
       /* Assign values to the k'th grid point */
       (*gp)[k].id=k;
@@ -471,8 +501,10 @@ exit(1);
     gsl_rng_free(randGen);
 
     if(par->samplingAlgorithm==0){
-      smooth(par,*gp); //AFIC: This function reorganizes very close points together according to the par->minScale parameter
-      if(!silent) printDone(5);
+      if(!fixed_grid){
+	smooth(par,*gp); //AFIC: This function reorganizes points very close to each other. (if their distance < the par->minScale parameter)
+	if(!silent) printDone(5);
+      }
       //if(!silent) printf("   NOT SMOOTHED!\n\n");
     }
 
@@ -506,9 +538,10 @@ Generate the remaining values if needed. **Note** that we check a few of them to
 
   if(sf3dmodels){
     for(i_id=0;i_id<par->ncell;i_id++){
-      ID_picked[i_id] = find_id_min((*gp)[i_id].x[0], xm,
-				    (*gp)[i_id].x[1], ym,
-				    (*gp)[i_id].x[2], zm);
+      if(fixed_grid) ID_picked[i_id] = i_id;
+      else ID_picked[i_id] = find_id_min((*gp)[i_id].x[0], xm,
+					 (*gp)[i_id].x[1], ym,
+					 (*gp)[i_id].x[2], zm);
       //printf("%d %d\n",i_id,ID_picked[i_id]);
     }
   }

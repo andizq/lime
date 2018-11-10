@@ -80,15 +80,16 @@ Notes:
   double val[99],totalDensity=0.0,rSquared=0.0,fracDensity=0.0;
   int i;
 
-  int id_min;
-  extern _Bool sf3dmodels;
+  unsigned int id_min;
+  //extern _Bool sf3dmodels;
   
   rSquared = r[0]*r[0]+r[1]*r[1]+r[2]*r[2];
   if(rSquared>=par->radiusSqu)
     return 0.0;
 
   if(sf3dmodels){
-    id_min = find_id_min(r[0],xm,r[1],ym,r[2],zm);
+    if(fixed_grid) id_min = 0;
+    else id_min = find_id_min(r[0],xm,r[1],ym,r[2],zm);
     density(0.0,0.0,(double)id_min,val);
   }else density(r[0],r[1],r[2],val);
 

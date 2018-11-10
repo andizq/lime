@@ -43,7 +43,7 @@ void calcGridContDustOpacity(configInfo *par, const double freq\
   double *knus=NULL, *dusts=NULL;
   double *freqs=NULL;
 
-  extern _Bool sf3dmodels; 
+  //extern _Bool sf3dmodels; 
   extern unsigned int *ID_picked;
   unsigned int i_id;
 
@@ -216,7 +216,7 @@ if(!if(par->useVelFuncInRaytrace)): vel
   double remnantSnu,expDTau,brightnessIncrement;
   double projVels[nSteps],d,vel[DIM];
 
-  extern _Bool sf3dmodels;
+  //extern _Bool sf3dmodels;
   unsigned int ID_picked;
   
   for(ichan=0;ichan<img[im].nchan;ichan++){
@@ -279,9 +279,10 @@ if(!if(par->useVelFuncInRaytrace)): vel
 	if(sf3dmodels)
 	  for(i=0;i<nSteps;i++){
 	    d = i*ds*oneOnNSteps;
-	    ID_picked = find_id_min(x[0]+(dx[0]*d),xm,
-				    x[1]+(dx[1]*d),ym,
-				    x[2]+(dx[2]*d),zm);
+	    if(fixed_grid) ID_picked = 0;
+	    else ID_picked = find_id_min(x[0]+(dx[0]*d),xm,
+					 x[1]+(dx[1]*d),ym,
+					 x[2]+(dx[2]*d),zm);
 	    velocity(0.0,0.0,(double)ID_picked,vel);
 	    projVels[i] = dotProduct3D(dx,vel);
 	  }
@@ -638,7 +639,7 @@ Note that this is called from within the multi-threaded block.
     int exitedFaceIs[nVertPerFace],fiEnteredCell;
   } *interCellKey=NULL;
 
-  extern _Bool sf3dmodels;
+  //extern _Bool sf3dmodels;
   unsigned int ID_picked;
 
   for(ichan=0;ichan<img[im].nchan;ichan++){
@@ -895,9 +896,10 @@ At the moment I will fix the number of segments, but it might possibly be faster
           }else{
 	    
 	    if(sf3dmodels){
-	      ID_picked = find_id_min(gips[2].x[0],xm,
-				      gips[2].x[1],ym,
-				      gips[2].x[2],zm);
+	      if(fixed_grid) ID_picked = 0;
+	      else ID_picked = find_id_min(gips[2].x[0],xm,
+					   gips[2].x[1],ym,
+					   gips[2].x[2],zm);
 	      velocity(0.0,0.0,(double)ID_picked, vel);
 	    }else velocity(gips[2].x[0], gips[2].x[1], gips[2].x[2], vel);
 
