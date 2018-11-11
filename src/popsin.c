@@ -11,7 +11,6 @@
 
 #include "lime.h"
 #include "defaults.h"
-#include "mindistance.h"
 
 void
 popsin(configInfo *par, struct grid **gp, molData **md, int *popsdone){
@@ -24,7 +23,7 @@ popsin(configInfo *par, struct grid **gp, molData **md, int *popsdone){
   (void)dummy;
 
   //extern _Bool sf3dmodels; 
-  extern unsigned int *ID_picked;
+  //extern unsigned int *ID_picked;
   unsigned int i_id;
 
   if((fp=fopen(par->restart, "rb"))==NULL){

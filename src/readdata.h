@@ -42,6 +42,7 @@ struct sf3d_data{
 _Bool sf3dmodels, fixed_grid;
 unsigned short Nx, Ny, Nz;
 unsigned int Ndata, *ID, *ID_picked;
+//extern unsigned int *ID_picked;
 double *xm, *ym, *zm;
 double *DENS, *TEMP, *VEL_x, *VEL_y, *VEL_z, *ABUND, *GTD;
 struct sf3d_data *sf3d;

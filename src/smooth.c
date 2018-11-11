@@ -9,7 +9,6 @@
 
 #include "lime.h"
 
-
 /* Based on Lloyds Algorithm (Lloyd, S. IEEE, 1982) */	
 void
 smooth(configInfo *par, struct grid *gp){

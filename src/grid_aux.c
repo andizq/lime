@@ -320,6 +320,36 @@ The algorithm works its way up the list of points with one index and down with a
 
   upI = 0;
   dnI = numPoints-1;
+  
+  if(sf3dmodels && fixed_grid){ 
+  
+  while(1){
+    while(upI<numPoints && !gp[upI].sink) upI++;
+    while(dnI>=0        &&  gp[dnI].sink) dnI--;
+
+  if(upI>=dnI) break;
+
+    nExtraSinks++;
+
+    i = indices[dnI];
+    indices[dnI] = indices[upI];
+    indices[upI] = i;
+
+    ID_picked[dnI] = ID_picked[upI];
+    ID_picked[upI] = i;
+
+    tempGp = gp[dnI];
+    gp[dnI] = gp[upI];
+    gp[upI] = tempGp; 
+   
+    /* However we want to retain the .id values as sequential.
+    */
+    gp[dnI].id = dnI;
+    gp[upI].id = upI;
+  }
+
+  }else{
+
   while(1){
     while(upI<numPoints && !gp[upI].sink) upI++;
     while(dnI>=0        &&  gp[dnI].sink) dnI--;
@@ -340,6 +370,8 @@ The algorithm works its way up the list of points with one index and down with a
     */
     gp[dnI].id = dnI;
     gp[upI].id = upI;
+
+  }
   }
 
   /*
@@ -490,8 +522,8 @@ getEdgeVelocities(configInfo *par, struct grid *gp){
   int i,k,j,l;
   double vel[3], x[3];
   
-  extern _Bool sf3dmodels;
-  extern unsigned int *ID_picked;
+  //extern _Bool sf3dmodels;
+  //extern unsigned int *ID_picked;
   
   if(sf3dmodels)
     for(i=0;i<par->ncell;i++){

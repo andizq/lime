@@ -12,7 +12,7 @@ TODO:
 
 #include "lime.h"
 #include "raythrucells.h"
-#include "mindistance.h"
+//#include "mindistance.h"
 
 typedef struct {
   double x,y, *intensity, *tau;
@@ -44,7 +44,7 @@ void calcGridContDustOpacity(configInfo *par, const double freq\
   double *freqs=NULL;
 
   //extern _Bool sf3dmodels; 
-  extern unsigned int *ID_picked;
+  //extern unsigned int *ID_picked;
   unsigned int i_id;
 
   kappatab = malloc(sizeof(*kappatab)*1);
@@ -275,14 +275,18 @@ if(!if(par->useVelFuncInRaytrace)): vel
       }
     } else {
       if(img[im].doline && par->useVelFuncInRaytrace){
-	
+	//printf("%d\n",nSteps);
 	if(sf3dmodels)
 	  for(i=0;i<nSteps;i++){
 	    d = i*ds*oneOnNSteps;
-	    if(fixed_grid) ID_picked = 10000;
-	    else ID_picked = find_id_min(x[0]+(dx[0]*d),xm,
-					 x[1]+(dx[1]*d),ym,
-					 x[2]+(dx[2]*d),zm);
+	    if(fixed_grid) 
+	      ID_picked = standard_min(x[0]+(dx[0]*d),sf3d->x,
+				       x[1]+(dx[1]*d),sf3d->y,
+				       x[2]+(dx[2]*d),sf3d->z);
+	    else 
+	      ID_picked = find_id_min(x[0]+(dx[0]*d),xm,
+				      x[1]+(dx[1]*d),ym,
+				      x[2]+(dx[2]*d),zm);
 	    velocity(0.0,0.0,(double)ID_picked,vel);
 	    projVels[i] = dotProduct3D(dx,vel);
 	  }
@@ -896,10 +900,14 @@ At the moment I will fix the number of segments, but it might possibly be faster
           }else{
 	    
 	    if(sf3dmodels){
-	      if(fixed_grid) ID_picked = 10000;
-	      else ID_picked = find_id_min(gips[2].x[0],xm,
-					   gips[2].x[1],ym,
-					   gips[2].x[2],zm);
+	      if(fixed_grid) 
+		ID_picked = standard_min(gips[2].x[0],sf3d->x,
+					 gips[2].x[1],sf3d->y,
+					 gips[2].x[2],sf3d->z);
+	      else 
+		ID_picked = find_id_min(gips[2].x[0],xm,
+					gips[2].x[1],ym,
+					gips[2].x[2],zm);
 	      velocity(0.0,0.0,(double)ID_picked, vel);
 	    }else velocity(gips[2].x[0], gips[2].x[1], gips[2].x[2], vel);
 

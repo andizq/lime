@@ -313,9 +313,9 @@ readOrBuildGrid(configInfo *par, struct grid **gp){
   unsigned int i_id;
   
   if(sf3dmodels) {
-    extern unsigned int *ID_picked; /* Global variable for further usage if sf3dmodels. Filled in with the ids picked by Lime */
+    extern unsigned int *ID_picked; /* Global variable for further usage if turned on sf3dmodels. Will be filled in with the grid ids picked by Lime */
     //printf("%d %d %d\n",par->ncell,par->pIntensity,par->sinkPoints);
-    ID_picked = malloc (sizeof(int) * par->ncell);    
+    ID_picked = malloc (sizeof(unsigned int) * par->ncell);    
   }
 
   par->dataFlags = 0;
@@ -517,6 +517,13 @@ exit(1);
   /* . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 Generate the remaining values if needed. **Note** that we check a few of them to make sure the user has set the appropriate values.
   */
+
+
+  if(sf3dmodels && fixed_grid){
+    for(i_id=0;i_id<par->ncell;i_id++)
+      ID_picked[i_id] = i_id; //Not the definitive since the function reorderGrid could affect the standard id orders.
+  }
+ 
   if(!allBitsSet(par->dataFlags, DS_mask_neighbours)){
     unsigned long nExtraSinks;
 
@@ -525,8 +532,9 @@ Generate the remaining values if needed. **Note** that we check a few of them to
     /* We just asked delaunay() to flag any grid points with IDs lower than par->pIntensity (which means their distances from model centre are less than the model radius) but which are nevertheless found to be sink points by virtue of the geometry of the mesh of Delaunay cells. Now we need to reshuffle the list of grid points, then reset par->pIntensity, such that all the non-sink points still have IDs lower than par->pIntensity.
     */ 
     //printf("%d, %d, %d\n",par->pIntensity,par->sinkPoints,par->ncell);
-    nExtraSinks = reorderGrid((unsigned long)par->ncell, *gp); //with fixed_grid and the whole grid the code faults here
+    nExtraSinks = reorderGrid((unsigned long)par->ncell, *gp);
     //printf("%d, %d, %d\n",par->pIntensity,par->sinkPoints,par->ncell);
+    //printf("Extra sinkPoints %d\n", nExtraSinks);
     par->pIntensity -= nExtraSinks;
     par->sinkPoints += nExtraSinks;
 
@@ -539,20 +547,19 @@ Generate the remaining values if needed. **Note** that we check a few of them to
   if(onlyBitsSet(par->dataFlags, DS_mask_2)) /* Only happens if (i) we read no file and have constructed this data within LIME, or (ii) we read a file at dataStageI==2. */
     writeGridIfRequired(par, *gp, NULL, 2);
 
-
-  if(sf3dmodels){
-    if(fixed_grid){ 
-      for(i_id=0;i_id<par->ncell;i_id++){
-	ID_picked[i_id] = i_id;
-      }
-    }else{
-      for(i_id=0;i_id<par->ncell;i_id++){
+  /*//Just checking whether the ID_picked indices was modified according to the reorderGrid function
+  if(fixed_grid){ 
+    for(i_id=0;i_id<par->ncell;i_id++) 
+      printf("id: %d\n",ID_picked[i_id]);
+  }
+  */
+  
+  if(sf3dmodels && !fixed_grid){
+      for(i_id=0;i_id<par->ncell;i_id++)
 	ID_picked[i_id] = find_id_min((*gp)[i_id].x[0], xm,
 				      (*gp)[i_id].x[1], ym,
 				      (*gp)[i_id].x[2], zm);
-      //printf("%d %d\n",i_id,ID_picked[i_id]);
-      }
-    }
+	//printf("%d %d\n",i_id,ID_picked[i_id]);
   }
 
   if(!allBitsSet(par->dataFlags, DS_mask_density)){

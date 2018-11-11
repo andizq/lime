@@ -256,7 +256,7 @@ void calcGridLinesDustOpacity(configInfo *par, molData *md, double *lamtab\
   double *knus=NULL, *dusts=NULL;
 
   //extern _Bool sf3dmodels; 
-  extern unsigned int *ID_picked;
+  //extern unsigned int *ID_picked;
   unsigned int i_id;
   
   if(par->dust != NULL){
@@ -309,7 +309,7 @@ void calcGridLinesDustOpacity(configInfo *par, molData *md, double *lamtab\
     gsl_spline_free(spline);
     gsl_interp_accel_free(acc);
   }
-  free(ID_picked);
+  //free(ID_picked);
 }
 
 /*....................................................................*/
