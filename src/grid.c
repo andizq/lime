@@ -505,7 +505,7 @@ exit(1);
 	smooth(par,*gp); //AFIC: This function reorganizes points very close to each other. (if their distance < the par->minScale parameter)
 	if(!silent) printDone(5);
       }else 
-	if(!silent) printf("   FIXED GRID: NOT SMOOTHED!\n\n");
+	if(!silent) printf("   Fixed grid: Smoothing turned off\n\n");
     }
 
     par->dataFlags |= DS_mask_1;
