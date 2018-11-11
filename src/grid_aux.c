@@ -310,7 +310,9 @@ reorderGrid(const unsigned long numPoints, struct grid *gp){
 The algorithm works its way up the list of points with one index and down with another. The 'up' travel stops at the 1st sink point it finds, the 'down' at the 1st non-sink point. If at that point the 'up' index is lower in value than the 'down', the points are swapped. This is just a tiny bit tricky because we also need to make sure all the neigh pointers are swapped. That's why we make an ordered list of indices and perform the swaps on that as well.
   */
 
-  unsigned long indices[numPoints],upI,dnI,nExtraSinks=0,i,ngi;
+  //unsigned long indices[numPoints],upI,dnI,nExtraSinks=0,i,ngi;
+  unsigned long *indices,upI,dnI,nExtraSinks=0,i,ngi;
+  indices = malloc(sizeof(unsigned long) * numPoints);
   int j;
   struct grid tempGp;
 

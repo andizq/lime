@@ -178,7 +178,7 @@ void readFixedGrid(configInfo *par, const unsigned int desiredNumPoints\
   unsigned int i_u;
   double progFraction;
   double x[DIM];
-  printf("Got into readFixedGrid\n");
+  //printf("Got into readFixedGrid\n");
   /* Sample pIntensity number of points */
   for(i_u=0;i_u<desiredNumPoints;i_u++){
     x[0] = sf3d->x[i_u];
@@ -504,8 +504,8 @@ exit(1);
       if(!fixed_grid){
 	smooth(par,*gp); //AFIC: This function reorganizes points very close to each other. (if their distance < the par->minScale parameter)
 	if(!silent) printDone(5);
-      }
-      //if(!silent) printf("   NOT SMOOTHED!\n\n");
+      }else 
+	if(!silent) printf("   FIXED GRID: NOT SMOOTHED!\n\n");
     }
 
     par->dataFlags |= DS_mask_1;
@@ -524,25 +524,34 @@ Generate the remaining values if needed. **Note** that we check a few of them to
 
     /* We just asked delaunay() to flag any grid points with IDs lower than par->pIntensity (which means their distances from model centre are less than the model radius) but which are nevertheless found to be sink points by virtue of the geometry of the mesh of Delaunay cells. Now we need to reshuffle the list of grid points, then reset par->pIntensity, such that all the non-sink points still have IDs lower than par->pIntensity.
     */ 
-    nExtraSinks = reorderGrid((unsigned long)par->ncell, *gp);
+    //printf("%d, %d, %d\n",par->pIntensity,par->sinkPoints,par->ncell);
+    nExtraSinks = reorderGrid((unsigned long)par->ncell, *gp); //with fixed_grid and the whole grid the code faults here
+    //printf("%d, %d, %d\n",par->pIntensity,par->sinkPoints,par->ncell);
     par->pIntensity -= nExtraSinks;
     par->sinkPoints += nExtraSinks;
 
     par->dataFlags |= DS_mask_neighbours;
+
   }
   distCalc(par, *gp); /* Mallocs and sets .dir & .ds, sets .nphot. We don't store these values so we have to calculate them whether we read a file or not. */
+
 
   if(onlyBitsSet(par->dataFlags, DS_mask_2)) /* Only happens if (i) we read no file and have constructed this data within LIME, or (ii) we read a file at dataStageI==2. */
     writeGridIfRequired(par, *gp, NULL, 2);
 
 
   if(sf3dmodels){
-    for(i_id=0;i_id<par->ncell;i_id++){
-      if(fixed_grid) ID_picked[i_id] = i_id;
-      else ID_picked[i_id] = find_id_min((*gp)[i_id].x[0], xm,
-					 (*gp)[i_id].x[1], ym,
-					 (*gp)[i_id].x[2], zm);
+    if(fixed_grid){ 
+      for(i_id=0;i_id<par->ncell;i_id++){
+	ID_picked[i_id] = i_id;
+      }
+    }else{
+      for(i_id=0;i_id<par->ncell;i_id++){
+	ID_picked[i_id] = find_id_min((*gp)[i_id].x[0], xm,
+				      (*gp)[i_id].x[1], ym,
+				      (*gp)[i_id].x[2], zm);
       //printf("%d %d\n",i_id,ID_picked[i_id]);
+      }
     }
   }
 

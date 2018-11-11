@@ -193,7 +193,7 @@ void readDatatab2() {
     fclose(fz);
     fclose(gridsize);
     fclose(fp);
-    printf("%f,%d,%d\n",sf3d->x[Ndata-1],cols,Ndata);
+    //printf("%f,%d,%d\n",sf3d->x[Ndata-1],cols,Ndata);
   }
 
   

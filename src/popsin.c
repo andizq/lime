@@ -23,7 +23,7 @@ popsin(configInfo *par, struct grid **gp, molData **md, int *popsdone){
 
   (void)dummy;
 
-  extern _Bool sf3dmodels; 
+  //extern _Bool sf3dmodels; 
   extern unsigned int *ID_picked;
   unsigned int i_id;
 
