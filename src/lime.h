@@ -213,6 +213,8 @@ _Bool	anyBitSet(const int flags, const int mask);
 _Bool	bitIsSet(const int flags, const int bitI);
 _Bool	onlyBitsSet(const int flags, const int mask);
 
+int standard_min_gp(double,double,double,int, struct grid*); //sf3dmodels
+
 void	binpopsout(configInfo*, struct grid*, molData*);
 void	calcDustData(configInfo*, double*, double*, const double, double*, const int, const double ts[], double*, double*);
 void	calcExpTableEntries(const int, const int);

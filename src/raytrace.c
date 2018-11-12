@@ -280,9 +280,17 @@ if(!if(par->useVelFuncInRaytrace)): vel
 	  for(i=0;i<nSteps;i++){
 	    d = i*ds*oneOnNSteps;
 	    if(fixed_grid) 
+	      /*
 	      ID_picked = standard_min(x[0]+(dx[0]*d),sf3d->x,
 				       x[1]+(dx[1]*d),sf3d->y,
 				       x[2]+(dx[2]*d),sf3d->z);
+	      */
+	    
+	      ID_picked = standard_min_gp(x[0]+(dx[0]*d),
+					  x[1]+(dx[1]*d),
+					  x[2]+(dx[2]*d),
+					  par->pIntensity, gp);
+
 	    else 
 	      ID_picked = find_id_min(x[0]+(dx[0]*d),xm,
 				      x[1]+(dx[1]*d),ym,
@@ -900,10 +908,18 @@ At the moment I will fix the number of segments, but it might possibly be faster
           }else{
 	    
 	    if(sf3dmodels){
-	      if(fixed_grid) 
+	      if(fixed_grid)
+		/*
 		ID_picked = standard_min(gips[2].x[0],sf3d->x,
 					 gips[2].x[1],sf3d->y,
 					 gips[2].x[2],sf3d->z);
+
+		*/
+		ID_picked = standard_min_gp(gips[2].x[0],
+					    gips[2].x[1],
+					    gips[2].x[2],
+					    par->pIntensity, gp);
+	      
 	      else 
 		ID_picked = find_id_min(gips[2].x[0],xm,
 					gips[2].x[1],ym,

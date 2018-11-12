@@ -70,6 +70,10 @@ double **defcols2read(unsigned short *cols) {
       sf3d->temperature = malloc (sizeof(double) * Ndata);
       data[noo] = sf3d->temperature;
     }
+    if (foo == SF3D_tdust){
+      sf3d->tdust = malloc (sizeof(double) * Ndata);
+      data[noo] = sf3d->tdust;
+    }
     if (foo == SF3D_vel_x){
       sf3d->vel_x = malloc (sizeof(double) * Ndata);
       data[noo] = sf3d->vel_x;

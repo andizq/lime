@@ -1,7 +1,32 @@
+/*
 #include <math.h>
 #include "constants.h"
 #include "readdata.h"
 #include "mindistance.h"
+*/
+#include "lime.h"
+
+int standard_min_gp(double x,
+		    double y,
+		    double z, 
+		    int Npoints, struct grid *gp){
+  double mindist,distsq;
+  mindist=1e5*PC;
+  unsigned int i,j,k,ind=-1;
+
+  for( i = 0; i < Npoints; i++){
+    distsq = sqrt(  (x-gp[i].x[0])*(x-gp[i].x[0])	\
+		  + (y-gp[i].x[1])*(y-gp[i].x[1])	\
+		  + (z-gp[i].x[2])*(z-gp[i].x[2]));
+		       
+    if (distsq<mindist){
+      mindist=distsq;
+      ind=i;
+    }
+  }
+  
+  return ind;
+}
 
 int standard_min(double x, double *xm,
 		 double y, double *ym,
