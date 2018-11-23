@@ -276,34 +276,54 @@ if(!if(par->useVelFuncInRaytrace)): vel
     } else {
       if(img[im].doline && par->useVelFuncInRaytrace){
 	//printf("%d\n",nSteps);
-	if(sf3dmodels)
+	if(sf3dmodels){
+	  
+	  /*
+	  if(fixed_grid)   
+	    ID_picked = standard_min(x[0],sf3d->x,
+				     x[1],sf3d->y,
+				     x[2],sf3d->z);
+	      
+	  else 
+	    ID_picked = find_id_min(x[0],xm,
+				    x[1],ym,
+				    x[2],zm);
+	  */
 	  for(i=0;i<nSteps;i++){
+	    
 	    d = i*ds*oneOnNSteps;
-	    if(fixed_grid) 
-	      /*
+	    //printf("i %d, d %.2lf, x+dx*d %.2lf\n",i,d,x[0]+(dx[0]*d));
+	    
+	    if(i==0 | i==1){
+	    if(fixed_grid)   
 	      ID_picked = standard_min(x[0]+(dx[0]*d),sf3d->x,
 				       x[1]+(dx[1]*d),sf3d->y,
 				       x[2]+(dx[2]*d),sf3d->z);
-	      */
-	    
+	      //printf("id_picked %d\n",ID_picked);
+	      
+	    /*
 	      ID_picked = standard_min_gp(x[0]+(dx[0]*d),
 					  x[1]+(dx[1]*d),
 					  x[2]+(dx[2]*d),
 					  par->pIntensity, gp);
-
+	    */
 	    else 
 	      ID_picked = find_id_min(x[0]+(dx[0]*d),xm,
 				      x[1]+(dx[1]*d),ym,
 				      x[2]+(dx[2]*d),zm);
+	    }
+  
 	    velocity(0.0,0.0,(double)ID_picked,vel);
 	    projVels[i] = dotProduct3D(dx,vel);
 	  }
-	else
+	}else{
 	  for(i=0;i<nSteps;i++){
 	    d = i*ds*oneOnNSteps;
 	    velocity(x[0]+(dx[0]*d),x[1]+(dx[1]*d),x[2]+(dx[2]*d),vel);
 	    projVels[i] = dotProduct3D(dx,vel);
 	  }
+	}
+
       }
 
       /* Calculate first the continuum stuff because it is the same for all channels:
@@ -909,17 +929,18 @@ At the moment I will fix the number of segments, but it might possibly be faster
 	    
 	    if(sf3dmodels){
 	      if(fixed_grid)
-		/*
+		
 		ID_picked = standard_min(gips[2].x[0],sf3d->x,
 					 gips[2].x[1],sf3d->y,
 					 gips[2].x[2],sf3d->z);
 
-		*/
+	      
+	      /*
 		ID_picked = standard_min_gp(gips[2].x[0],
 					    gips[2].x[1],
 					    gips[2].x[2],
 					    par->pIntensity, gp);
-	      
+		*/      
 	      else 
 		ID_picked = find_id_min(gips[2].x[0],xm,
 					gips[2].x[1],ym,

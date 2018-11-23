@@ -33,9 +33,11 @@ int standard_min(double x, double *xm,
 		 double z, double *zm){
   double mindist,distsq;
   mindist=1e5*PC;
-  unsigned int i,j,k,ind=-1;
+  unsigned int i,i0,j,k,ind=-1;
 
-  for( i = 0; i < Ndata; i++){
+  i0 = Ndata - Ndata; ///100;
+  //printf("Starting point %d %d\n",i0);
+  for( i = i0; i < Ndata; i++){
     distsq = sqrt(  (x-xm[i])*(x-xm[i])	\
 		  + (y-ym[i])*(y-ym[i])	\
 		  + (z-zm[i])*(z-zm[i]));
@@ -45,7 +47,8 @@ int standard_min(double x, double *xm,
       ind=i;
     }
   }
-  
+  //printf("mindist %.2lf, %.2lf, %.2lf\n",x,y,z);
+  //printf("mindist %.2lf, id %d\n",mindist,ind);
   return ind;
 }
 

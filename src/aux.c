@@ -289,6 +289,9 @@ void calcDustData(configInfo *par, double *dens, double *freqs\
      * fault unless no collision-partner-related parameters are set at all (i.e. par->collPartUserSetFlags==0),
      * but that's a very particular case almost never satisfied. 
      * If this block is executed, the last block of collparts.c will not be.
+     
+     * UPDATE: Lime indeed enters here first as stated in the line 310 of raytrace.c to calculate the dust emission.  
+     
      */
 
     if(par->collPartNames==NULL){ /* Then load it from the LAMDA names. */
