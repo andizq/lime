@@ -217,8 +217,9 @@ if(!if(par->useVelFuncInRaytrace)): vel
   double projVels[nSteps],d,vel[DIM];
 
   //extern _Bool sf3dmodels;
-  unsigned int ID_picked;
-  
+  unsigned int ID_picked_dum;
+  double projDummy;
+
   for(ichan=0;ichan<img[im].nchan;ichan++){
     ray.tau[ichan]=0.0;
     ray.intensity[ichan]=0.0;
@@ -275,48 +276,58 @@ if(!if(par->useVelFuncInRaytrace)): vel
       }
     } else {
       if(img[im].doline && par->useVelFuncInRaytrace){
-	//printf("%d\n",nSteps);
+
 	if(sf3dmodels){
 	  
-	  /*
-	  if(fixed_grid)   
-	    ID_picked = standard_min(x[0],sf3d->x,
-				     x[1],sf3d->y,
-				     x[2],sf3d->z);
-	      
-	  else 
-	    ID_picked = find_id_min(x[0],xm,
-				    x[1],ym,
-				    x[2],zm);
-	  */
-	  for(i=0;i<nSteps;i++){
-	    
-	    d = i*ds*oneOnNSteps;
-	    //printf("i %d, d %.2lf, x+dx*d %.2lf\n",i,d,x[0]+(dx[0]*d));
-	    
-	    if(i==0 | i==1){
-	    if(fixed_grid)   
-	      ID_picked = standard_min(x[0]+(dx[0]*d),sf3d->x,
-				       x[1]+(dx[1]*d),sf3d->y,
-				       x[2]+(dx[2]*d),sf3d->z);
-	      //printf("id_picked %d\n",ID_picked);
-	      
-	    /*
-	      ID_picked = standard_min_gp(x[0]+(dx[0]*d),
-					  x[1]+(dx[1]*d),
-					  x[2]+(dx[2]*d),
-					  par->pIntensity, gp);
-	    */
+	  if(fixed_grid){   
+	    if(posn >= par->pIntensity)
+	      ID_picked_dum = standard_min_gp(x[0],
+					      x[1],
+					      x[2],
+					      par->pIntensity, gp);
 	    else 
-	      ID_picked = find_id_min(x[0]+(dx[0]*d),xm,
-				      x[1]+(dx[1]*d),ym,
-				      x[2]+(dx[2]*d),zm);
+	      ID_picked_dum = ID_picked[posn];
+
+	    velocity(0.0,0.0,(double)ID_picked_dum,vel);
+	    projDummy = dotProduct3D(dx,vel);
+	    for(i=0;i<nSteps;i++){
+	      projVels[i] = projDummy;
+	  
+	      //printf("i %d, d %.2lf, xyz+dx*d %.2lf, %.2lf, %.2lf\n",i,d/PC,(x[0]+(dx[0]*d))/PC,(x[1]+(dx[1]*d))/PC,(x[2]+(dx[2]*d))/PC);
+	      //printf("posn %d, gp[posn].xyz : %.2lf, %.2lf, %.2lf\n",posn,gp[posn].x[0]/PC,gp[posn].x[1]/PC,gp[posn].x[2]/PC);
+	    
+	      /*
+		ID_picked_dum = standard_min(x[0]+(dx[0]*d),sf3d->x,
+		x[1]+(dx[1]*d),sf3d->y,
+		x[2]+(dx[2]*d),sf3d->z);
+		printf("id_picked %d\n",ID_picked_dum);
+	      */
+	      /*
+	      if(posn >= par->pIntensity){
+		if(i==0)
+		  ID_picked_dum = standard_min_gp(x[0]+(dx[0]*d),
+					      x[1]+(dx[1]*d),
+					      x[2]+(dx[2]*d),
+					      par->pIntensity, gp);
+	      }else 
+		ID_picked_dum = posn;
+	      */
+	      //printf("id_picked %d\n",ID_picked_dum);	      
 	    }
-  
-	    velocity(0.0,0.0,(double)ID_picked,vel);
-	    projVels[i] = dotProduct3D(dx,vel);
+
+	  }else{ // if not fixed_grid 
+	    for(i=0;i<nSteps;i++){
+	      d = i*ds*oneOnNSteps;
+	      ID_picked_dum = find_id_min(x[0]+(dx[0]*d),xm,
+					  x[1]+(dx[1]*d),ym,
+					  x[2]+(dx[2]*d),zm);
+	      velocity(0.0,0.0,(double)ID_picked_dum,vel);
+	      projVels[i] = dotProduct3D(dx,vel);
+	    }
 	  }
-	}else{
+  
+	    
+	}else{ // if not sf3dmodels (i.e. traditional lime)
 	  for(i=0;i<nSteps;i++){
 	    d = i*ds*oneOnNSteps;
 	    velocity(x[0]+(dx[0]*d),x[1]+(dx[1]*d),x[2]+(dx[2]*d),vel);
@@ -672,7 +683,7 @@ Note that this is called from within the multi-threaded block.
   } *interCellKey=NULL;
 
   //extern _Bool sf3dmodels;
-  unsigned int ID_picked;
+  unsigned int ID_picked_dum;
 
   for(ichan=0;ichan<img[im].nchan;ichan++){
     ray.tau[ichan]=0.0;
@@ -930,22 +941,22 @@ At the moment I will fix the number of segments, but it might possibly be faster
 	    if(sf3dmodels){
 	      if(fixed_grid)
 		
-		ID_picked = standard_min(gips[2].x[0],sf3d->x,
-					 gips[2].x[1],sf3d->y,
-					 gips[2].x[2],sf3d->z);
+		ID_picked_dum = standard_min(gips[2].x[0],sf3d->x,
+					     gips[2].x[1],sf3d->y,
+					     gips[2].x[2],sf3d->z);
 
 	      
 	      /*
-		ID_picked = standard_min_gp(gips[2].x[0],
-					    gips[2].x[1],
-					    gips[2].x[2],
-					    par->pIntensity, gp);
+		ID_picked_dum = standard_min_gp(gips[2].x[0],
+		gips[2].x[1],
+		gips[2].x[2],
+		par->pIntensity, gp);
 		*/      
 	      else 
-		ID_picked = find_id_min(gips[2].x[0],xm,
-					gips[2].x[1],ym,
-					gips[2].x[2],zm);
-	      velocity(0.0,0.0,(double)ID_picked, vel);
+		ID_picked_dum = find_id_min(gips[2].x[0],xm,
+					    gips[2].x[1],ym,
+					    gips[2].x[2],zm);
+	      velocity(0.0,0.0,(double)ID_picked_dum, vel);
 	    }else velocity(gips[2].x[0], gips[2].x[1], gips[2].x[2], vel);
 
             projVelRay = dotProduct3D(dir, vel);

@@ -520,10 +520,17 @@ exit(1);
 Generate the remaining values if needed. **Note** that we check a few of them to make sure the user has set the appropriate values.
   */
 
-
+  /*
+    AFIC
+    IF fixed_grid:
+    The array ID_picked below is not the definitive since the function reorderGrid could affect 
+    the standard id orders.
+    Have a look at the function reorderGrid in the file aux.c to see the upgraded definition 
+    of ID_picked.
+  */
   if(sf3dmodels && fixed_grid){
     for(i_id=0;i_id<par->ncell;i_id++)
-      ID_picked[i_id] = i_id; //Not the definitive since the function reorderGrid could affect the standard id orders.
+      ID_picked[i_id] = i_id; 
   }
  
   if(!allBitsSet(par->dataFlags, DS_mask_neighbours)){
@@ -549,10 +556,11 @@ Generate the remaining values if needed. **Note** that we check a few of them to
   if(onlyBitsSet(par->dataFlags, DS_mask_2)) /* Only happens if (i) we read no file and have constructed this data within LIME, or (ii) we read a file at dataStageI==2. */
     writeGridIfRequired(par, *gp, NULL, 2);
 
-  /*//Just checking whether the ID_picked indices was modified according to the reorderGrid function
+  /*//Just checking whether the ID_picked indices were modified according to the reorderGrid function
   if(fixed_grid){ 
     for(i_id=0;i_id<par->ncell;i_id++) 
-      printf("id: %d\n",ID_picked[i_id]);
+      if(i_id!=ID_picked[i_id])
+	printf("id, picked: %d, %d\n",i_id,ID_picked[i_id]);
   }
   */
   

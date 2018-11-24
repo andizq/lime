@@ -12,19 +12,20 @@ int standard_min_gp(double x,
 		    int Npoints, struct grid *gp){
   double mindist,distsq;
   mindist=1e5*PC;
-  unsigned int i,j,k,ind=-1;
+  unsigned int i,j,k,ireal=0,ind=-1;
 
   for( i = 0; i < Npoints; i++){
+    ireal = ID_picked[i];
     distsq = sqrt(  (x-gp[i].x[0])*(x-gp[i].x[0])	\
 		  + (y-gp[i].x[1])*(y-gp[i].x[1])	\
 		  + (z-gp[i].x[2])*(z-gp[i].x[2]));
 		       
     if (distsq<mindist){
       mindist=distsq;
-      ind=i;
+      ind=ireal;
     }
   }
-  
+  //printf("id picked %d out of %d, gp[ind].xyz : %.2lf, %.2lf, %.2lf, mindist %.4lf\n",ind,Npoints,gp[ind].x[0]/PC,gp[ind].x[1]/PC,gp[ind].x[2]/PC, mindist/PC);
   return ind;
 }
 
@@ -35,7 +36,7 @@ int standard_min(double x, double *xm,
   mindist=1e5*PC;
   unsigned int i,i0,j,k,ind=-1;
 
-  i0 = Ndata - Ndata; ///100;
+  i0 = 0;
   //printf("Starting point %d %d\n",i0);
   for( i = i0; i < Ndata; i++){
     distsq = sqrt(  (x-xm[i])*(x-xm[i])	\
