@@ -174,20 +174,34 @@ int pointEvaluation(configInfo *par, const double uniformRandom, double *r){
 void readFixedGrid(configInfo *par, const unsigned int desiredNumPoints\
   , double (*outRandLocations)[DIM]){
 
-  int di;
+  int di, pIntdown=0;
   unsigned int i_u;
   double progFraction;
-  double x[DIM];
+  double x[DIM], r_test;
   //printf("Got into readFixedGrid\n");
   /* Sample pIntensity number of points */
   for(i_u=0;i_u<desiredNumPoints;i_u++){
+    
     x[0] = sf3d->x[i_u];
     x[1] = sf3d->y[i_u];
     if(DIM==3) x[2] = sf3d->z[i_u];
-    for(di=0;di<DIM;di++)
-      outRandLocations[i_u][di]=x[di];
+  
+    r_test = x[0]*x[0] + x[1]*x[1] + x[2]*x[2];
+    if(r_test < par->radiusSqu){
+      for(di=0;di<DIM;di++)
+	outRandLocations[i_u][di]=x[di];
+    }else
+      pIntdown += 1;
+  
     progFraction = (double)i_u/((double)desiredNumPoints-1);
     if(!silent) progressbar(progFraction, 4);
+  }
+
+  if (pIntdown){
+    par->pIntensity -= pIntdown;
+    par->ncell -= pIntdown;
+    printf("\n\tWARNING: Some grid points were rejected because they were not \n\twithin the LIME domain set by the user via par->radius.");
+    printf("\n\tThe parameter par->pIntensity was therefore redefined to\n\tcontain %d points out of the initial %d.\n",par->pIntensity,desiredNumPoints);
   }
 
 }
@@ -312,12 +326,6 @@ readOrBuildGrid(configInfo *par, struct grid **gp){
   //                            depending on the activation of the -S flag. */  
   unsigned int i_id;
   
-  if(sf3dmodels) {
-    extern unsigned int *ID_picked; /* Global variable for further usage if turned on sf3dmodels. Will be filled in with the grid ids picked by Lime */
-    //printf("%d %d %d\n",par->ncell,par->pIntensity,par->sinkPoints);
-    ID_picked = malloc (sizeof(unsigned int) * par->ncell);    
-  }
-
   par->dataFlags = 0;
   if(par->gridInFile!=NULL){
     readGridWrapper(par, gp, &collPartNames, &numCollPartRead);
@@ -520,6 +528,13 @@ exit(1);
 Generate the remaining values if needed. **Note** that we check a few of them to make sure the user has set the appropriate values.
   */
 
+  if(sf3dmodels) {
+    /* Global variable for further usage if turned on sf3dmodels. Will be filled in with the grid ids picked by Lime */
+    extern unsigned int *ID_picked; 
+    //printf("%d %d %d\n",par->ncell,par->pIntensity,par->sinkPoints);
+    ID_picked = malloc (sizeof(unsigned int) * par->ncell);    
+  }
+
   /*
     AFIC
     IF fixed_grid:
@@ -528,6 +543,7 @@ Generate the remaining values if needed. **Note** that we check a few of them to
     Have a look at the function reorderGrid in the file aux.c to see the upgraded definition 
     of ID_picked.
   */
+
   if(sf3dmodels && fixed_grid){
     for(i_id=0;i_id<par->ncell;i_id++)
       ID_picked[i_id] = i_id; 
@@ -540,12 +556,20 @@ Generate the remaining values if needed. **Note** that we check a few of them to
 
     /* We just asked delaunay() to flag any grid points with IDs lower than par->pIntensity (which means their distances from model centre are less than the model radius) but which are nevertheless found to be sink points by virtue of the geometry of the mesh of Delaunay cells. Now we need to reshuffle the list of grid points, then reset par->pIntensity, such that all the non-sink points still have IDs lower than par->pIntensity.
     */ 
+    
+    /*
+    if(fixed_grid){ 
+      for(i_id=0;i_id<par->ncell;i_id++) 
+	printf("id, %d, sink: %d\n",i_id,(*gp)[i_id].sink);
+    }
+    */
+
     //printf("%d, %d, %d\n",par->pIntensity,par->sinkPoints,par->ncell);
-    nExtraSinks = reorderGrid((unsigned long)par->ncell, *gp);
-    //printf("%d, %d, %d\n",par->pIntensity,par->sinkPoints,par->ncell);
+    nExtraSinks = reorderGrid((unsigned long)par->ncell, *gp); //in grid_aux.c
     //printf("Extra sinkPoints %d\n", nExtraSinks);
     par->pIntensity -= nExtraSinks;
     par->sinkPoints += nExtraSinks;
+    printf("%d, %d, %d\n",par->pIntensity,par->sinkPoints,par->ncell);
 
     par->dataFlags |= DS_mask_neighbours;
 
@@ -556,13 +580,13 @@ Generate the remaining values if needed. **Note** that we check a few of them to
   if(onlyBitsSet(par->dataFlags, DS_mask_2)) /* Only happens if (i) we read no file and have constructed this data within LIME, or (ii) we read a file at dataStageI==2. */
     writeGridIfRequired(par, *gp, NULL, 2);
 
-  /*//Just checking whether the ID_picked indices were modified according to the reorderGrid function
+  //Just checking whether the ID_picked indices were modified according to the reorderGrid function
   if(fixed_grid){ 
     for(i_id=0;i_id<par->ncell;i_id++) 
       if(i_id!=ID_picked[i_id])
-	printf("id, picked: %d, %d\n",i_id,ID_picked[i_id]);
+	printf("id, picked, sink: %d, %d, %d\n",i_id,ID_picked[i_id],(*gp)[i_id].sink);
   }
-  */
+  
   
   if(sf3dmodels && !fixed_grid){
       for(i_id=0;i_id<par->ncell;i_id++)

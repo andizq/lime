@@ -311,7 +311,8 @@ The algorithm works its way up the list of points with one index and down with a
   */
 
   //unsigned long indices[numPoints],upI,dnI,nExtraSinks=0,i,ngi;
-  unsigned long *indices,upI,dnI,nExtraSinks=0,i,ngi;
+  unsigned long *indices,upI,dnI,nExtraSinks=0,i,ngi; //AFIC
+  unsigned long nSinksDelaunay=0; //AFIC
   indices = malloc(sizeof(unsigned long) * numPoints);
   int j;
   struct grid tempGp;
@@ -390,6 +391,8 @@ Suppose further that the old value of gp[i].neigh[j] is &gp[30]. We detect that 
       if(ngi != indices[ngi])
         gp[i].neigh[j] = &gp[indices[ngi]];
     }
+    if(gp[i].sink) 
+      nSinksDelaunay += 1;
   }
 
   return nExtraSinks;
