@@ -509,10 +509,10 @@ exit(1);
     gsl_rng_free(randGen);
 
     if(par->samplingAlgorithm==0){
-      //smooth(par,*gp); //AFIC: This function reorganizes points very close to each other. (if their distance < the par->minScale parameter)
+      //smooth(par,*gp); //AFIC: This function reorganizes points lying very close to each other. (if their distance < the par->minScale parameter)
       //if(!silent) printDone(5);
       if(!fixed_grid){
-	smooth(par,*gp); //AFIC: This function reorganizes points very close to each other. (if their distance < the par->minScale parameter)
+	smooth(par,*gp); //AFIC: This function reorganizes points lying very close to each other. (if their distance < the par->minScale parameter)
 	if(!silent) printDone(5);
       }else 
 	if(!silent) printf("   Fixed grid: Smoothing turned off\n\n");
