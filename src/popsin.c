@@ -117,6 +117,8 @@ exit(1);
   par->pIntensity -= nExtraSinks;
   par->sinkPoints += nExtraSinks;
 
+  //AFIC: Need to define ID_picked here as in grid.c right after the reorderGrid if sf3dmodels and not fixed_grid 
+
   distCalc(par, *gp);
   if(!bitIsSet(defaultFuncFlags, USERFUNC_velocity)){
     /* In any case, it is extremely dodgy to read vertex velocities from a file but then use a separate-supplied function to calculate the edge velocity samples. This is stupid astronomer code - asking for trouble. */
