@@ -337,7 +337,7 @@ The algorithm works its way up the list of points with one index and down with a
     indices[upI] = i;
 
     ID_picked[dnI] = ID_picked[upI];
-    ID_picked[upI] = i;
+    ID_picked[upI] = ids_fixed[i];
 
     tempGp = gp[dnI];
     gp[dnI] = gp[upI];

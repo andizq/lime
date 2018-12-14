@@ -166,6 +166,7 @@ void readDatatab2() {
     data = defcols2read(&cols);
     id = sf3d->id;
     sf3d->cols = cols;
+  
     
     xm = malloc (sizeof(double) * Nx);
     FILE *fx  = fopen("x.dat", "r");
@@ -179,6 +180,7 @@ void readDatatab2() {
     FILE *fz  = fopen("z.dat", "r");
     for( noo = 0; noo < Nz; noo++ ) fscanf(fz,"%lf",&zm[noo]);
     
+
     FILE *fp  = fopen("datatab.dat", "r");
     
     printf("*** Found it. Reading the data...\n");
@@ -192,10 +194,12 @@ void readDatatab2() {
 
     printf("*** The data was read succesfully from 'npoints.dat' 'datatab.dat'\n");
 
+    
     fclose(fx);
     fclose(fy);
     fclose(fz);
     fclose(gridsize);
+    
     fclose(fp);
     //printf("%f,%d,%d\n",sf3d->x[Ndata-1],cols,Ndata);
   }

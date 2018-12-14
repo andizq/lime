@@ -172,10 +172,10 @@ int pointEvaluation(configInfo *par, const double uniformRandom, double *r){
 
 /*....................................................................*/
 void readFixedGrid(configInfo *par, const unsigned int desiredNumPoints\
-  , double (*outRandLocations)[DIM]){
+		   , double (*outRandLocations)[DIM], unsigned int *ids_fixed){
 
   int di, pIntdown=0;
-  unsigned int i_u;
+  unsigned int i_u, i_id, i_real=0;
   double progFraction;
   double x[DIM], r_test;
   //printf("Got into readFixedGrid\n");
@@ -188,8 +188,12 @@ void readFixedGrid(configInfo *par, const unsigned int desiredNumPoints\
   
     r_test = x[0]*x[0] + x[1]*x[1] + x[2]*x[2];
     if(r_test < par->radiusSqu){
-      for(di=0;di<DIM;di++)
-	outRandLocations[i_u][di]=x[di];
+      for(di=0;di<DIM;di++){
+	outRandLocations[i_real][di]=x[di];
+      }
+      ids_fixed[i_real] = i_u;
+      //printf("%d, %d, %d\n",i_real, i_u, ids_fixed[i_real]);
+      i_real += 1;
     }else
       pIntdown += 1;
   
@@ -200,9 +204,15 @@ void readFixedGrid(configInfo *par, const unsigned int desiredNumPoints\
   if (pIntdown){
     par->pIntensity -= pIntdown;
     par->ncell -= pIntdown;
+    for(i_id=par->pIntensity;i_id<par->ncell;i_id++)
+      ids_fixed[i_id] = i_id;
     printf("\n\tWARNING: Some grid points were rejected because they were not \n\twithin the LIME domain set by the user via par->radius.");
     printf("\n\tThe parameter par->pIntensity was therefore redefined to\n\tcontain %d points out of the initial %d.\n",par->pIntensity,desiredNumPoints);
+  }else{
+    for(i_id=0;i_id<par->ncell;i_id++)
+      ids_fixed[i_id] = i_id;
   }
+    
 
 }
 
@@ -325,7 +335,7 @@ readOrBuildGrid(configInfo *par, struct grid **gp){
   //extern _Bool sf3dmodels; /* Already took True or False at main.c, 
   //                            depending on the activation of the -S flag. */  
   unsigned int i_id;
-  
+
   par->dataFlags = 0;
   if(par->gridInFile!=NULL){
     readGridWrapper(par, gp, &collPartNames, &numCollPartRead);
@@ -421,7 +431,9 @@ Generate the grid point locations.
       gsl_rng_set(randGen,time(0));
 
     if(fixed_grid){
-      readFixedGrid(par, (unsigned int)par->pIntensity, outRandLocations);
+      extern unsigned int *ids_fixed;
+      ids_fixed = malloc (sizeof(unsigned int) * par->ncell);    
+      readFixedGrid(par, (unsigned int)par->pIntensity, outRandLocations, ids_fixed);
     }else{
 
     if(par->samplingAlgorithm==0){
@@ -546,7 +558,8 @@ Generate the remaining values if needed. **Note** that we check a few of them to
 
   if(sf3dmodels && fixed_grid){
     for(i_id=0;i_id<par->ncell;i_id++)
-      ID_picked[i_id] = i_id; 
+      ID_picked[i_id] = ids_fixed[i_id]; 
+      //ID_picked[i_id] = i_id; 
   }
  
   if(!allBitsSet(par->dataFlags, DS_mask_neighbours)){
@@ -583,8 +596,10 @@ Generate the remaining values if needed. **Note** that we check a few of them to
   //Just checking whether the ID_picked indices were modified according to the reorderGrid function
   if(fixed_grid){ 
     for(i_id=0;i_id<par->ncell;i_id++) 
-      if(i_id!=ID_picked[i_id])
-	printf("id, picked, sink: %d, %d, %d\n",i_id,ID_picked[i_id],(*gp)[i_id].sink);
+      if(ids_fixed[i_id]!=ID_picked[i_id])
+	printf("id, id_fixed, id_picked, sink?: %d, %d, %d, %d\n",i_id,ids_fixed[i_id],ID_picked[i_id],(*gp)[i_id].sink);
+      //if(ids_fixed[i_id]!=ID_picked[i_id])
+      //printf("id, picked, sink: %d, %d, %d\n",i_id,ID_picked[i_id],(*gp)[i_id].sink);
   }
   
   
