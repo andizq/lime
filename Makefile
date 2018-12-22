@@ -72,7 +72,8 @@ endif
 #------------------------
 #SF3DMODELS
 ifeq (${SF3DMODELS},yes)
-  CCFLAGS += -DSF3DMODELS
+  CCFLAGS += -DSF3DMODELS -DUSE_LIST_NODE_ALLOCATOR #sf3dmodels and kdtree
+  LDFLAGS += -pthread #kdtree.c
 endif
 ifeq (${FIXED_GRID},yes)
   CCFLAGS += -DFIXED_GRID

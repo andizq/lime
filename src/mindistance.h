@@ -1,6 +1,6 @@
 #ifndef MINDISTANCE_H
 #define MINDISTANCE_H
-/*
+/* //Defined in lime.h because needs the struct object gp
 int standard_min_gp(double,
 		    double,
 		    double, 

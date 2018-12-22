@@ -1,4 +1,5 @@
 #include "readdata.h"
+#include "kdtree.h"
 
 double **defcols2read(unsigned short *cols) {
 
@@ -212,6 +213,8 @@ void readDatatab() {
 
   unsigned int noo;
   
+  kd = kd_create(3); //new
+
   printf("*** Looking for sf3dmodels input...\n");
   FILE *gridsize = fopen("npoints.dat", "r");
   fscanf(gridsize,"%d %d %d %d",&Nx,&Ny,&Nz,&Ndata);
@@ -245,6 +248,20 @@ void readDatatab() {
 
   /////////////////////////////////////////
 
+  //new: next block
+  //Insert the points into the KDTree object
+  /*
+  printf("*** Inserting points into kdtree...\n");
+  unsigned int nox, noy, noz;
+  for( nox = 0; nox < Nx; nox++ )
+    for( noy = 0; noy < Ny; noy++ )
+      for( noz = 0; noz < Nz; noz++ ){
+	
+	assert(kd_insert3(kd, xm[nox], ym[noy], zm[noz], 0) == 0);
+      }
+  */
+
+  //
   ID = malloc (sizeof(unsigned int) * Ndata);
   DENS = malloc (sizeof(double) * Ndata);
   TEMP = malloc (sizeof(double) * Ndata);

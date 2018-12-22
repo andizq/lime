@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <collparts.h>
+#include <assert.h>
 
 #define SF3D_id             0
 #define SF3D_x              1
@@ -41,6 +42,7 @@ struct sf3d_data{
 
 
 _Bool sf3dmodels, fixed_grid;
+void *kd; //new
 unsigned short Nx, Ny, Nz;
 unsigned int Ndata, *ID, *ID_picked, *ids_fixed;
 //extern unsigned int *ID_picked;

@@ -5,6 +5,9 @@
 #include "mindistance.h"
 */
 #include "lime.h"
+#include "kdtree.h"
+
+static double dist_sq( double *a1, double *a2, int dims ); //new
 
 int standard_min_gp(double x,
 		    double y,
@@ -74,14 +77,51 @@ int index_min(double u, double *um, int Nu){
 int find_id_min(double x, double *xm, 
 		double y, double *ym, 
 		double z, double *zm){
-
+  
+  
   //extern unsigned short Nx,Ny,Nz; /* Already defined at readdata.c and declared at lime.h via readdata.h */
-  int i,j,k,Num;
+  
 
+  int i,j,k,Num;
   i = index_min(x, xm, Nx);
   j = index_min(y, ym, Ny);
   k = index_min(z, zm, Nz);
-  Num = i*Ny*Nz + j*Nz + k;
+  Num = i*Ny*Nz + j*Nz + k; //commented
   
+  /*
+  int Num = 0;
+  double pt[3] = { x, y, z };
+  struct kdres *presults;
+  char *pch;
+  double pos[3], dist;
+  double radius = 20*AU;
+  presults = kd_nearest_range( kd, pt, radius );
+  printf( "found %d results:\n", kd_res_size(presults) );
+  
+  while( !kd_res_end( presults ) ) {
+    // get the data and position of the current result item 
+    pch = (char*)kd_res_item( presults, pos );
+    printf( "found %d results:\n", kd_res_size(presults) );
+    // compute the distance of the current result from the pt 
+    dist = sqrt( dist_sq( pt, pos, 3 ) );
+printf( "found %.3f results:\n", dist );
+// print out the retrieved data 
+    printf( "node at (%.3f, %.3f, %.3f) is %.3f away and has data\n", 
+    pos[0], pos[1], pos[2], dist);
+
+    // go to the next entry 
+    kd_res_next( presults );
+  }
+  */
+
   return Num;
+}
+
+static double dist_sq( double *a1, double *a2, int dims ) {
+  double dist_sq = 0, diff;
+  while( --dims >= 0 ) {
+    diff = (a1[dims] - a2[dims]);
+    dist_sq += diff*diff;
+  }
+  return dist_sq;
 }

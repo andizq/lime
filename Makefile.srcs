@@ -30,7 +30,8 @@ CORESOURCES = \
 	src/tree_random.c\
 	src/writefits.c\
 	src/readdata.c\
-	src/mindistance.c
+	src/mindistance.c\
+	src/kdtree.c
 
 STDSOURCES = \
 	src/lime_defaults.c\
@@ -78,7 +79,8 @@ COREINCLUDES = \
 	src/tree_random.h\
 	src/ufunc_types.h\
 	src/readdata.h\
-	src/mindistance.h	
+	src/mindistance.h\
+	src/kdtree.h	
 
 HDF5INCLUDES = \
 	src/grid2hdf5.h
