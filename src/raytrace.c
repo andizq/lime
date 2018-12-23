@@ -316,6 +316,7 @@ if(!if(par->useVelFuncInRaytrace)): vel
 	    }
 
 	  }else{ // if not fixed_grid 
+	     
 	    for(i=0;i<nSteps;i++){
 	      d = i*ds*oneOnNSteps;
 	      ID_picked_dum = find_id_min(x[0]+(dx[0]*d),xm,
@@ -323,10 +324,11 @@ if(!if(par->useVelFuncInRaytrace)): vel
 					  x[2]+(dx[2]*d),zm);
 	      velocity(0.0,0.0,(double)ID_picked_dum,vel);
 	      projVels[i] = dotProduct3D(dx,vel);
+	      
 	    }
+
 	  }
-  
-	    
+  	    
 	}else{ // if not sf3dmodels (i.e. traditional lime)
 	  for(i=0;i<nSteps;i++){
 	    d = i*ds*oneOnNSteps;
@@ -940,18 +942,18 @@ At the moment I will fix the number of segments, but it might possibly be faster
 	    
 	    if(sf3dmodels){
 	      if(fixed_grid)
-		
+		/*
 		ID_picked_dum = standard_min(gips[2].x[0],sf3d->x,
 					     gips[2].x[1],sf3d->y,
 					     gips[2].x[2],sf3d->z);
-
+		*/
+					     
 	      
-	      /*
 		ID_picked_dum = standard_min_gp(gips[2].x[0],
-		gips[2].x[1],
-		gips[2].x[2],
-		par->pIntensity, gp);
-		*/      
+						gips[2].x[1],
+						gips[2].x[2],
+						par->pIntensity, gp);
+		      
 	      else 
 		ID_picked_dum = find_id_min(gips[2].x[0],xm,
 					    gips[2].x[1],ym,
