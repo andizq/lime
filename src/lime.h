@@ -110,6 +110,7 @@
 
 #include "readdata.h" /* SF3DMODELS */
 #include "mindistance.h" /* SF3DMODELS */
+#include "kdtree.h" /*kdtree*/
 
 struct cpData {
   double *down,*temp;

@@ -126,7 +126,7 @@ void readDatatab2() {
   id = sf3d->id;
   sf3d->cols = cols;
   
-  /*
+  
   xm = malloc (sizeof(double) * Nx);
   FILE *fx  = fopen("x.dat", "r");
   for( noo = 0; noo < Nx; noo++ ) fscanf(fx,"%lf",&xm[noo]);
@@ -138,7 +138,7 @@ void readDatatab2() {
   zm = malloc (sizeof(double) * Nz);
   FILE *fz  = fopen("z.dat", "r");
   for( noo = 0; noo < Nz; noo++ ) fscanf(fz,"%lf",&zm[noo]);
-  */
+
   
   FILE *fp  = fopen("datatab.dat", "r");  
 
@@ -152,40 +152,15 @@ void readDatatab2() {
     }
   }
   
-  xm = sf3d->x;
-  ym = sf3d->y;
-  zm = sf3d->z;
-
-    //new: next block
-  //Insert the points into the KDTree object
-  
-  kd = kd_create(3); //new  
-  unsigned int *datak, id_dat;
-  datak = malloc (sizeof(unsigned int) * Ndata);
-  printf("*** Inserting points into kdtree...\n");
-  unsigned int nox, noy, noz;
-  for( id_dat = 0; id_dat < Ndata; id_dat++ ){
-    datak[id_dat] = id_dat;
-    //printf("%d\n",datak[id_dat]);
-    assert(kd_insert3(kd, 
-		      sf3d->x[id_dat], sf3d->y[id_dat], sf3d->z[id_dat], 
-		      &datak[id_dat]) == 0);
-    }
-  radius_kd = 3.086e+16;
-  //
-
-  
   printf("*** The data was succesfully read from 'x.dat' 'y.dat' 'z.dat' 'npoints.dat' 'datatab.dat'\n");
 
-  //  fclose(fx);
-  //  fclose(fy);
-  //  fclose(fz);
+  fclose(fx);
+  fclose(fy);
+  fclose(fz);
   fclose(gridsize);
   fclose(fp);
 
-  }
-  /*
-  else{
+  }else{
   
     FILE *gridsize = fopen("npoints.dat", "r");
     fscanf(gridsize,"%d %d %d %d",&Nx,&Ny,&Nz,&Ndata);
@@ -220,8 +195,26 @@ void readDatatab2() {
       }
     }
 
-    printf("*** The data was succesfully read from 'npoints.dat' 'datatab.dat'\n");
+    /*
+    //new: next block
+    //Insert the points into the KDTree object
+    
+    kd = kd_create(3); //new  
+    unsigned int *datak, id_dat;
+    datak = malloc (sizeof(unsigned int) * Ndata);
+    printf("*** Inserting points into kdtree...\n");
+    unsigned int nox, noy, noz;
+    for( id_dat = 0; id_dat < Ndata; id_dat++ ){
+      datak[id_dat] = id_dat;
+      //printf("%d\n",datak[id_dat]);
+      assert(kd_insert3(kd, 
+			sf3d->x[id_dat], sf3d->y[id_dat], sf3d->z[id_dat], 
+			&datak[id_dat]) == 0);
+    }
+    */
 
+
+    printf("*** The data was succesfully read from 'npoints.dat' 'datatab.dat'\n");
     
     fclose(fx);
     fclose(fy);
@@ -231,7 +224,6 @@ void readDatatab2() {
     fclose(fp);
     //printf("%f,%d,%d\n",sf3d->x[Ndata-1],cols,Ndata);
   }
-  */
   
 }
 

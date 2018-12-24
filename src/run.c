@@ -271,7 +271,7 @@ Run through all the user functions and set flags in the global defaultFuncFlags 
   for(i=0;i<MAX_N_COLL_PART;i++) dummyDens[i] = -1.0; /* We expect that no real function will return such values, so this may be used as an indicator for the number of values returned. */
 
   if(sf3dmodels){
-    if(fixed_grid) ID_picked = standard_min(x,sf3d->x,y,sf3d->y,z,sf3d->z);
+    if(fixed_grid) ID_picked = 0; //standard_min(x,sf3d->x,y,sf3d->y,z,sf3d->z);
     else ID_picked = find_id_min(x,xm,y,ym,z,zm);
     density(      0.0, 0.0, (double)ID_picked, dummyDens);
     temperature(  0.0, 0.0, (double)ID_picked, dummyT);

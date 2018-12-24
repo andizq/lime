@@ -281,10 +281,16 @@ if(!if(par->useVelFuncInRaytrace)): vel
 	  
 	  if(fixed_grid){   
 	    if(posn >= par->pIntensity)
+	      /*
 	      ID_picked_dum = standard_min_gp(x[0],
 					      x[1],
 					      x[2],
 					      par->pIntensity, gp);
+	      */
+	      ID_picked_dum = standard_min(x[0],sf3d->x,
+					   x[1],sf3d->y,
+					   x[2],sf3d->z);
+
 	    else 
 	      ID_picked_dum = ID_picked[posn];
 
@@ -942,18 +948,18 @@ At the moment I will fix the number of segments, but it might possibly be faster
 	    
 	    if(sf3dmodels){
 	      if(fixed_grid)
-		/*
+
 		ID_picked_dum = standard_min(gips[2].x[0],sf3d->x,
 					     gips[2].x[1],sf3d->y,
 					     gips[2].x[2],sf3d->z);
-		*/
-					     
-	      
+		
+		
+	      /*
 		ID_picked_dum = standard_min_gp(gips[2].x[0],
 						gips[2].x[1],
 						gips[2].x[2],
 						par->pIntensity, gp);
-		      
+	      */			     
 	      else 
 		ID_picked_dum = find_id_min(gips[2].x[0],xm,
 					    gips[2].x[1],ym,

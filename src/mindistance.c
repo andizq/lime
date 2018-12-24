@@ -35,12 +35,12 @@ int standard_min_gp(double x,
 int standard_min(double x, double *xm,
 		 double y, double *ym,
 		 double z, double *zm){
+  /*
   double mindist,distsq;
   mindist=1e5*PC;
   unsigned int i,i0,j,k,ind=-1;
 
   i0 = 0;
-  //printf("Starting point %d %d\n",i0);
   for( i = i0; i < Ndata; i++){
     distsq = sqrt(  (x-xm[i])*(x-xm[i])	\
 		  + (y-ym[i])*(y-ym[i])	\
@@ -51,9 +51,22 @@ int standard_min(double x, double *xm,
       ind=i;
     }
   }
-  //printf("mindist %.2lf, %.2lf, %.2lf\n",x,y,z);
-  //printf("mindist %.2lf, id %d\n",mindist,ind);
+
   return ind;
+  */
+  
+
+  double pt[3] = { x, y, z };
+  struct kdres *presults;
+  char *data;
+  unsigned int *pch;
+  double pos[3];
+
+  presults = kd_nearest( kd, pt );
+  pch = (unsigned int*)kd_res_item( presults, pos );
+  return *pch;
+
+
 }
 
 int index_min(double u, double *um, int Nu){
@@ -77,11 +90,10 @@ int index_min(double u, double *um, int Nu){
 int find_id_min(double x, double *xm, 
 		double y, double *ym, 
 		double z, double *zm){
+    
+  /* Already defined at readdata.c and declared at lime.h via readdata.h */
+  //extern unsigned short Nx,Ny,Nz; 
   
-  
-  //extern unsigned short Nx,Ny,Nz; /* Already defined at readdata.c and declared at lime.h via readdata.h */
-  
-  /*
   int i,j,k,Num;
   
   i = index_min(x, xm, Nx);
@@ -91,8 +103,8 @@ int find_id_min(double x, double *xm,
 
   return Num;
 
-  */
-
+ 
+  /*
   int Num = 0;
   double pt[3] = { x, y, z };
   struct kdres *presults;
@@ -103,7 +115,8 @@ int find_id_min(double x, double *xm,
   presults = kd_nearest( kd, pt );
   pch = (unsigned int*)kd_res_item( presults, pos );
   return *pch;
-  
+  */ 
+
   /*
   presults = kd_nearest_range( kd, pt, radius_kd );
   while (1){
