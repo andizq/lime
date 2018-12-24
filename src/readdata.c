@@ -112,7 +112,7 @@ void readDatatab2() {
   unsigned int noo, i, *id;
   unsigned short j, cols = 0;
   double **data;
-
+  
   printf("sf3dmodels: %d, fixed_grid: %d\n",sf3dmodels,fixed_grid);
   printf("*** Looking for sf3dmodels input...\n");
 
@@ -125,7 +125,8 @@ void readDatatab2() {
   data = defcols2read(&cols);
   id = sf3d->id;
   sf3d->cols = cols;
-
+  
+  /*
   xm = malloc (sizeof(double) * Nx);
   FILE *fx  = fopen("x.dat", "r");
   for( noo = 0; noo < Nx; noo++ ) fscanf(fx,"%lf",&xm[noo]);
@@ -137,9 +138,10 @@ void readDatatab2() {
   zm = malloc (sizeof(double) * Nz);
   FILE *fz  = fopen("z.dat", "r");
   for( noo = 0; noo < Nz; noo++ ) fscanf(fz,"%lf",&zm[noo]);
+  */
   
   FILE *fp  = fopen("datatab.dat", "r");  
-  
+
   printf("*** Found it. Reading the data...\n");
   printf("   (Grid info. --> Nx,Ny,Nz,N: %d %d %d %d)\n",Nx,Ny,Nz,Ndata);
   
@@ -150,15 +152,40 @@ void readDatatab2() {
     }
   }
   
-  printf("*** The data was read succesfully from 'x.dat' 'y.dat' 'z.dat' 'npoints.dat' 'datatab.dat'\n");
+  xm = sf3d->x;
+  ym = sf3d->y;
+  zm = sf3d->z;
 
-  fclose(fx);
-  fclose(fy);
-  fclose(fz);
+    //new: next block
+  //Insert the points into the KDTree object
+  
+  kd = kd_create(3); //new  
+  unsigned int *datak, id_dat;
+  datak = malloc (sizeof(unsigned int) * Ndata);
+  printf("*** Inserting points into kdtree...\n");
+  unsigned int nox, noy, noz;
+  for( id_dat = 0; id_dat < Ndata; id_dat++ ){
+    datak[id_dat] = id_dat;
+    //printf("%d\n",datak[id_dat]);
+    assert(kd_insert3(kd, 
+		      sf3d->x[id_dat], sf3d->y[id_dat], sf3d->z[id_dat], 
+		      &datak[id_dat]) == 0);
+    }
+  radius_kd = 3.086e+16;
+  //
+
+  
+  printf("*** The data was succesfully read from 'x.dat' 'y.dat' 'z.dat' 'npoints.dat' 'datatab.dat'\n");
+
+  //  fclose(fx);
+  //  fclose(fy);
+  //  fclose(fz);
   fclose(gridsize);
   fclose(fp);
 
-  }else{
+  }
+  /*
+  else{
   
     FILE *gridsize = fopen("npoints.dat", "r");
     fscanf(gridsize,"%d %d %d %d",&Nx,&Ny,&Nz,&Ndata);
@@ -193,7 +220,7 @@ void readDatatab2() {
       }
     }
 
-    printf("*** The data was read succesfully from 'npoints.dat' 'datatab.dat'\n");
+    printf("*** The data was succesfully read from 'npoints.dat' 'datatab.dat'\n");
 
     
     fclose(fx);
@@ -204,7 +231,7 @@ void readDatatab2() {
     fclose(fp);
     //printf("%f,%d,%d\n",sf3d->x[Ndata-1],cols,Ndata);
   }
-
+  */
   
 }
 
@@ -213,7 +240,6 @@ void readDatatab() {
 
   unsigned int noo;
   
-  kd = kd_create(3); //new
 
   printf("*** Looking for sf3dmodels input...\n");
   FILE *gridsize = fopen("npoints.dat", "r");
@@ -250,17 +276,22 @@ void readDatatab() {
 
   //new: next block
   //Insert the points into the KDTree object
-  /*
+  
+  kd = kd_create(3); //new  
+  unsigned int *datak, id_dat=0;
+  datak = malloc (sizeof(unsigned int) * Ndata);
   printf("*** Inserting points into kdtree...\n");
   unsigned int nox, noy, noz;
   for( nox = 0; nox < Nx; nox++ )
     for( noy = 0; noy < Ny; noy++ )
       for( noz = 0; noz < Nz; noz++ ){
-	
-	assert(kd_insert3(kd, xm[nox], ym[noy], zm[noz], 0) == 0);
+	datak[id_dat] = id_dat;
+	//printf("%d\n",datak[id_dat]);
+	assert(kd_insert3(kd, xm[nox], ym[noy], zm[noz], &datak[id_dat]) == 0);
+	id_dat++;
       }
-  */
-
+  
+  
   //
   ID = malloc (sizeof(unsigned int) * Ndata);
   DENS = malloc (sizeof(double) * Ndata);
@@ -283,7 +314,7 @@ void readDatatab() {
     
   }
   
-  printf("*** The data was read succesfully from 'x.dat' 'y.dat' 'z.dat' 'npoints.dat' 'datatab.dat'\n");
+  printf("*** The data was succesfully read from 'x.dat' 'y.dat' 'z.dat' 'npoints.dat' 'datatab.dat'\n");
 
   fclose(fx);
   fclose(fy);

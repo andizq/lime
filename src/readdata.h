@@ -43,6 +43,7 @@ struct sf3d_data{
 
 _Bool sf3dmodels, fixed_grid;
 void *kd; //new
+double radius_kd; //new
 unsigned short Nx, Ny, Nz;
 unsigned int Ndata, *ID, *ID_picked, *ids_fixed;
 //extern unsigned int *ID_picked;
