@@ -19,8 +19,8 @@ input(inputPars *par, image *img){
    */
   par->radius                   = 495*AU;
   par->minScale                 = 2.5*AU; // 2 * sizex / Nx / 2
-  par->pIntensity               = 20000; 
-  par->sinkPoints               = 5000; 
+  par->pIntensity               = 20000;
+  par->sinkPoints               = 5000;
   par->dust                     = "opacities_k05_230GHz_B_1_7.tab";
   par->moldatfile[0]            = "ch3cn.dat";
   par->sampling                 = 1; // if 0: log distr. for radius, directions distr. uniformly on a sphere.
@@ -103,11 +103,9 @@ input(inputPars *par, image *img){
 
 /******************************************************************************/
 
-int id_int;
-
 void
 density(double dummy0, double dummy1, double id, double *density){
-  
+  int id_int;
   id_int=ceil(id);
   density[0] = DENS[id_int]; 
 }
@@ -116,7 +114,7 @@ density(double dummy0, double dummy1, double id, double *density){
 
 void
 temperature(double dummy0, double dummy1, double id, double *temperature){
-
+  int id_int;
   id_int=ceil(id);
   temperature[0] = TEMP[id_int];
 }
@@ -125,7 +123,7 @@ temperature(double dummy0, double dummy1, double id, double *temperature){
 
 void
 abundance(double dummy0, double dummy1, double id, double *abundance){
-
+  int id_int;
   id_int=ceil(id);
   abundance[0] = ABUND[id_int];
 }
@@ -147,7 +145,7 @@ doppler(double dummy0, double dummy1, double id, double *doppler){
 
 void
 velocity(double dummy0, double dummy1, double id, double *vel){
-
+  int id_int;
   id_int=ceil(id);
   vel[0] = VEL_x[id_int];
   vel[1] = VEL_y[id_int];
