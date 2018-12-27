@@ -10,13 +10,13 @@
 #define SF3D_x              1
 #define SF3D_y              2
 #define SF3D_z              3
-#define SF3D_dens_H2        CP_H2 + 3     //1
-#define SF3D_dens_p_H2      CP_p_H2 + 3   //2
-#define SF3D_dens_o_H2      CP_o_H2 + 3   //3
-#define SF3D_dens_e         CP_e + 3      //4
-#define SF3D_dens_H         CP_H + 3      //5
-#define SF3D_dens_He        CP_He + 3     //6
-#define SF3D_dens_Hplus     CP_Hplus + 3  //7
+#define SF3D_dens_H2        CP_H2 + 3     //4
+#define SF3D_dens_p_H2      CP_p_H2 + 3   //5
+#define SF3D_dens_o_H2      CP_o_H2 + 3   //6
+#define SF3D_dens_e         CP_e + 3      //7
+#define SF3D_dens_H         CP_H + 3      //8
+#define SF3D_dens_He        CP_He + 3     //9
+#define SF3D_dens_Hplus     CP_Hplus + 3  //10
 #define SF3D_temperature    11
 #define SF3D_tdust          12
 #define SF3D_vel_x          13
@@ -43,7 +43,6 @@ struct sf3d_data{
 
 _Bool sf3dmodels, fixed_grid;
 void *kd; //new
-double radius_kd; //new
 unsigned short Nx, Ny, Nz;
 unsigned int Ndata, *ID, *ID_picked, *ids_fixed;
 //extern unsigned int *ID_picked;

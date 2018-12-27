@@ -15,7 +15,7 @@ int standard_min_gp(double x,
 		    int Npoints, struct grid *gp){
   double mindist,distsq;
   mindist=1e5*PC;
-  unsigned int i,j,k,ireal=0,ind=-1;
+  unsigned int i,ireal=0,ind=-1;
 
   for( i = 0; i < Npoints; i++){
     ireal = ID_picked[i];
@@ -73,7 +73,7 @@ int index_min(double u, double *um, int Nu){
 
   double mindist,distu;
   mindist=1e5*PC; //Huge initial value
-  unsigned int i,j;
+  unsigned int i,j=0;
 
   for( i = 0; i < Nu; i++){
     distu = fabs(u-um[i]);
@@ -156,7 +156,6 @@ printf( "found %.3f results:\n", dist );
     kd_res_next( presults );
   }
   */
-
   
 }
 

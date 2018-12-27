@@ -157,9 +157,8 @@ int main() {
 
   (void)status; // just to stop compiler warnings because this return value is currently unused.
 
-  if(sf3dmodels) readDatatab2();//readDatatab2();
-  
-  
+  if(sf3dmodels) readDatatab();//readDatatab2();
+    
   //printf("Storage size for short : %d \n", sizeof(unsigned short));
   
   nImages = initParImg(&par, &img);

@@ -8,7 +8,7 @@ double **defcols2read(unsigned short *cols) {
 
   FILE *check_columns = fopen("npoints_test.dat", "r");
   for(noo = 0; noo < SF3D_max_cols; noo++ ){    
-    fscanf(check_columns,"%d",&foo);
+    fscanf(check_columns,"%hd",&foo);
     if (noo == 0 && foo != 0){
       printf("ERROR (sf3dmodels input): Missing ids column, it MUST be provided by the user.\n");
       exit(1);
@@ -19,7 +19,7 @@ double **defcols2read(unsigned short *cols) {
   data = (double **)malloc(count * sizeof(double *));
 
   FILE *alloc_columns = fopen("npoints_test.dat", "r");
-  //fscanf(gridsize,"%d %d %d %d",&Nx,&Ny,&Nz,&Ndata);
+
   for(noo = 0; noo < count; noo++ ){    
 
     fscanf(alloc_columns,"%d",&foo);
@@ -119,7 +119,7 @@ void readDatatab2() {
   if(!fixed_grid){
 
   FILE *gridsize = fopen("npoints.dat", "r");
-  fscanf(gridsize,"%d %d %d %d",&Nx,&Ny,&Nz,&Ndata);
+  fscanf(gridsize,"%hd %hd %hd %d",&Nx,&Ny,&Nz,&Ndata);
 
   sf3d = malloc(sizeof(struct sf3d_data));  
   data = defcols2read(&cols);
@@ -143,7 +143,7 @@ void readDatatab2() {
   FILE *fp  = fopen("datatab.dat", "r");  
 
   printf("*** Found it. Reading the data...\n");
-  printf("   (Grid info. --> Nx,Ny,Nz,N: %d %d %d %d)\n",Nx,Ny,Nz,Ndata);
+  printf("   (Grid info. --> Nx,Ny,Nz,N: %hd %hd %hd %d)\n",Nx,Ny,Nz,Ndata);
   
   for (i = 0; i < Ndata; i++) {
     fscanf(fp, "%d", &id[i]);
@@ -163,7 +163,7 @@ void readDatatab2() {
   }else{
   
     FILE *gridsize = fopen("npoints.dat", "r");
-    fscanf(gridsize,"%d %d %d %d",&Nx,&Ny,&Nz,&Ndata);
+    fscanf(gridsize,"%hd %hd %hd %d",&Nx,&Ny,&Nz,&Ndata);
     
     sf3d = malloc(sizeof(struct sf3d_data));  
     data = defcols2read(&cols);
@@ -232,10 +232,9 @@ void readDatatab() {
 
   unsigned int noo;
   
-
   printf("*** Looking for sf3dmodels input...\n");
   FILE *gridsize = fopen("npoints.dat", "r");
-  fscanf(gridsize,"%d %d %d %d",&Nx,&Ny,&Nz,&Ndata);
+  fscanf(gridsize,"%hd %hd %hd %d",&Nx,&Ny,&Nz,&Ndata);
   xm = malloc (sizeof(double) * Nx);
   FILE *fx  = fopen("x.dat", "r");
   for( noo = 0; noo < Nx; noo++ ){
@@ -268,7 +267,7 @@ void readDatatab() {
 
   //new: next block
   //Insert the points into the KDTree object
-  
+  /*
   kd = kd_create(3); //new  
   unsigned int *datak, id_dat=0;
   datak = malloc (sizeof(unsigned int) * Ndata);
@@ -282,8 +281,8 @@ void readDatatab() {
 	assert(kd_insert3(kd, xm[nox], ym[noy], zm[noz], &datak[id_dat]) == 0);
 	id_dat++;
       }
-  
-  
+  */
+
   //
   ID = malloc (sizeof(unsigned int) * Ndata);
   DENS = malloc (sizeof(double) * Ndata);
@@ -297,7 +296,7 @@ void readDatatab() {
   FILE *fp  = fopen("datatab.dat", "r");
 
   printf("*** Found it. Reading the data...\n");
-  printf("   (Grid info. --> Nx,Ny,Nz,N: %d %d %d %d)\n",Nx,Ny,Nz,Ndata);
+  printf("   (Grid info. --> Nx,Ny,Nz,N: %hd %hd %hd %d)\n",Nx,Ny,Nz,Ndata);
 
   for( noo = 0; noo < Ndata; noo++ ){
 

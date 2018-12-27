@@ -948,7 +948,6 @@ At the moment I will fix the number of segments, but it might possibly be faster
 	    
 	    if(sf3dmodels){
 	      if(fixed_grid)
-
 		ID_picked_dum = standard_min(gips[2].x[0],sf3d->x,
 					     gips[2].x[1],sf3d->y,
 					     gips[2].x[2],sf3d->z);
