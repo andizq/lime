@@ -98,34 +98,30 @@ input(inputPars *par, image *img){
   img[i].unit                   = 4;              // 0:Kelvin 1:Jansky/pixel 2:SI 3:Lsun/pixel 4:tau
   img[i].filename               = "img_tau_main.fits"; //Output file
 
-
 }
 
 /******************************************************************************/
 
 void
 density(double dummy0, double dummy1, double id, double *density){
-  int id_int;
-  id_int=ceil(id);
-  density[0] = DENS[id_int]; 
+  int id_int=ceil(id);
+  density[0] = sf3d->dens_H2[id_int]; 
 }
 
 /******************************************************************************/
 
 void
 temperature(double dummy0, double dummy1, double id, double *temperature){
-  int id_int;
-  id_int=ceil(id);
-  temperature[0] = TEMP[id_int];
+  int id_int=ceil(id);
+  temperature[0] = sf3d->temp_gas[id_int];
 }
 
 /******************************************************************************/
 
 void
 abundance(double dummy0, double dummy1, double id, double *abundance){
-  int id_int;
-  id_int=ceil(id);
-  abundance[0] = ABUND[id_int];
+  int id_int=ceil(id);
+  abundance[0] = sf3d->abundance[0][id_int];
 }
 
 /******************************************************************************/
@@ -145,11 +141,10 @@ doppler(double dummy0, double dummy1, double id, double *doppler){
 
 void
 velocity(double dummy0, double dummy1, double id, double *vel){
-  int id_int;
-  id_int=ceil(id);
-  vel[0] = VEL_x[id_int];
-  vel[1] = VEL_y[id_int];
-  vel[2] = VEL_z[id_int];
+  int id_int=ceil(id);
+  vel[0] = sf3d->vel_x[id_int];
+  vel[1] = sf3d->vel_y[id_int];
+  vel[2] = sf3d->vel_z[id_int];
 }
 
 /******************************************************************************/
