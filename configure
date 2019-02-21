@@ -7,7 +7,7 @@ touch $defsfile
 
 echo "LIB_QHULL = qhull" >> $defsfile
 
-qhull_incs=( "/usr/include/libqhull" "/usr/include/qhull" "/opt/local/include/qhull" "/sw/include/qhull" )
+qhull_incs=( "/usr/include/libqhull" "/usr/include/qhull" "/opt/local/include/qhull" "/sw/include/qhull" "/usr/local/include/libqhull" "/usr/include/qhull" )
 
 for incdir in ${qhull_incs[@]}
 do
@@ -18,7 +18,7 @@ do
   fi
 done 
 
-fitsio_incs=( "/usr/include/cfitsio" "/usr/include/libcfitsio0" )
+fitsio_incs=( "/usr/include/cfitsio" "/usr/include/libcfitsio0" "/usr/local/include/cfitsio" "/usr/local/include/libcfitsio0" )
 
 for incdir in ${fitsio_incs[@]}
 do
