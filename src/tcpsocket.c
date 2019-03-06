@@ -48,8 +48,7 @@ openSocket(char *moldatfile){
   strcpy(t,page);
   strcat(t, moldatfile);
   page=t;
-
-
+  
   /* Create socket (similar to open file) */
   if((sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0){
     if(!silent) bail_out("Can't create TCP socket");
@@ -122,4 +121,5 @@ openSocket(char *moldatfile){
   }
   checkFirstLineMolDat(fp, moldatfile);
   fclose(fp);
+
 }

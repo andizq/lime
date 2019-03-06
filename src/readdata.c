@@ -6,7 +6,7 @@ double **defcols2read(double **data){ //unsigned short *cols) {
   unsigned short noo, count = 0, count_abund = 0, i_abund = 0, foo = 4242;
   //  double **data;
 
-  FILE *check_columns = fopen("npoints_test.dat", "r");
+  FILE *check_columns = fopen("header.dat", "r");
   fscanf(check_columns,"%hd",&foo);
   if (foo != 0){
     printf("ERROR (sf3dmodels input): Missing ids column, it MUST be provided by the user.\n");
@@ -22,18 +22,18 @@ double **defcols2read(double **data){ //unsigned short *cols) {
   //data = (double **)malloc(count * sizeof(double *));
 
   if (sf3d->cols != count){
-    printf("ERROR (sf3dmodels input): Number of columns to be read ('sf3d_header.dat') differs from the number of columns written on 'datatab.dat' ('sf3d_npoints.dat')\n");
-    printf("on 'sf3d_npoints.dat': %d, on 'sf3d_header.dat': %d\n",sf3d->cols,count);
+    printf("ERROR (sf3dmodels input): Number of columns to be read ('header.dat') differs from the number of columns written on 'datatab.dat' ('npoints.dat')\n");
+    printf("on 'npoints.dat': %d, on 'header.dat': %d\n",sf3d->cols,count);
     exit(1);
   }
 
   sf3d->abundance = (double **)malloc(count_abund * sizeof(double *));
 
-  FILE *alloc_columns = fopen("npoints_test.dat", "r");
+  FILE *alloc_columns = fopen("header.dat", "r");
 
   for(noo = 0; noo < sf3d->cols; noo++ ){    
 
-    fscanf(alloc_columns,"%d",&foo);
+    fscanf(alloc_columns,"%hd",&foo);
 
     if (foo == SF3D_id){
       sf3d->id = malloc (sizeof(unsigned int) * Ndata);      

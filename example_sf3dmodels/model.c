@@ -60,7 +60,7 @@ input(inputPars *par, image *img){
   img[i].filename               = "img_ch3cnK4_main.fits"; //Output file
 
 
-  //1st continuum image (at the freq. of K4)
+  //1st continuum image (at the central freq. of K4)
   i=1;
   img[i].freq                   = 349.345849e9; //K4         //Continuum central frequency                                     
   img[i].pxls                   = 200;               // Pixels per dimension                                            

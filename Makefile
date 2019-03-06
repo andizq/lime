@@ -57,7 +57,7 @@ MODELS  = model.c # Overwritten in usual practice by the value passed in by the 
 MODELO 	= ${srcdir}/model.o
 
 CCFLAGS += -O3 -falign-loops=16 -fno-strict-aliasing
-LDFLAGS += -lgsl -lgslcblas -l${LIB_QHULL} -lcfitsio -lncurses -lm 
+LDFLAGS += -lgsl -lgslcblas -l${LIB_QHULL} -lcfitsio -lncurses -lm -lcurl
 
 ifeq (${DOTEST},yes)
   CCFLAGS += -DTEST
