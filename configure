@@ -7,7 +7,7 @@ touch $defsfile
 
 echo "LIB_QHULL = qhull" >> $defsfile
 
-qhull_incs=( "/usr/include/libqhull" "/usr/include/qhull" "/opt/local/include/qhull" "/sw/include/qhull" "/usr/local/include/libqhull" "/usr/local/include/qhull" "./include/qhull" "./include/libqhull" )
+qhull_incs=( "./include/qhull" "./include/libqhull" "/usr/include/libqhull" "/usr/include/qhull" "/opt/local/include/qhull" "/sw/include/qhull" "/usr/local/include/libqhull" "/usr/local/include/qhull" )
 
 for incdir in ${qhull_incs[@]}
 do
