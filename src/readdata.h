@@ -24,7 +24,8 @@
 #define SF3D_vel_z          15
 #define SF3D_abundance      16
 #define SF3D_gtdratio       17
-#define SF3D_max_cols       18
+#define SF3D_doppler        18
+#define SF3D_max_cols       19
 
 struct sf3d_data{
   unsigned int *id;
@@ -36,6 +37,7 @@ struct sf3d_data{
   double *vel_z;
   double **abundance;
   double *gtdratio;
+  double *doppler;
   unsigned short cols;
 };
 

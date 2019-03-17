@@ -107,6 +107,11 @@ double **defcols2read(double **data){ //unsigned short *cols) {
       sf3d->gtdratio = malloc (sizeof(double) * Ndata);
       data[noo] = sf3d->gtdratio;
     }
+    if (foo == SF3D_doppler){
+      sf3d->doppler = malloc (sizeof(double) * Ndata);
+      data[noo] = sf3d->doppler;
+    }
+
     
   }
   
