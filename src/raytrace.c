@@ -63,12 +63,29 @@ void calcGridContDustOpacity(configInfo *par, const double freq\
     kappatab[0] = interpolateKappa(freq, lamtab, kaptab, nEntries, spline, acc);
   }
 
-  if(sf3dmodels)
-    for(id=0;id<par->ncell;id++){
-      gasIIdust(0.0,0.0,(double)ID_picked[id],&gtd);
-      calcDustData(par, gp[id].dens, freqs, gtd, kappatab, 1, gp[id].t, knus, dusts); /* in aux.c. */
-      gp[id].cont.knu = knus[0];
-      gp[id].cont.dust = dusts[0];
+  if(sf3dmodels && fixed_grid)
+    {
+      for(id=0;id<par->pIntensity;id++){
+	gasIIdust(0.0,0.0,(double)ID_picked[id],&gtd);
+	calcDustData(par, gp[id].dens, freqs, gtd, kappatab, 1, gp[id].t, knus, dusts); /* in aux.c. */
+	gp[id].cont.knu = knus[0];
+	gp[id].cont.dust = dusts[0];
+      }
+      for(id=par->pIntensity;id<par->ncell;id++){ //sinkpoints: gtd = 100.
+	gtd = 100.;
+	calcDustData(par, gp[id].dens, freqs, gtd, kappatab, 1, gp[id].t, knus, dusts); /* in aux.c. */
+	gp[id].cont.knu = knus[0];
+	gp[id].cont.dust = dusts[0];
+      }
+    }
+  else if(sf3dmodels && !fixed_grid)
+    {
+      for(id=0;id<par->ncell;id++){
+	gasIIdust(0.0,0.0,(double)ID_picked[id],&gtd);
+	calcDustData(par, gp[id].dens, freqs, gtd, kappatab, 1, gp[id].t, knus, dusts); /* in aux.c. */
+	gp[id].cont.knu = knus[0];
+	gp[id].cont.dust = dusts[0];
+      }
     }
   else
     for(id=0;id<par->ncell;id++){
