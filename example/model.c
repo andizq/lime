@@ -26,9 +26,10 @@ input(inputPars *par, image *img){
   par->dust                     = "jena_thin_e6.tab";
   par->moldatfile[0]            = "hco+@xpol.dat";
   par->sampling                 = 2; // log distr. for radius, directions distr. uniformly on a sphere.
-  par->nSolveIters              = 14;
+  par->lte_only = 0;
+  par->nSolveIters              = 15;
   par->resetRNG	                = 0;
-
+  
 /* The following are deprecated. Only the VTK output is still considered useful.
   par->outputfile               = "populations.pop";
   par->binoutputfile            = "restart.pop";
@@ -87,7 +88,9 @@ input(inputPars *par, image *img){
   par->collPartNames[0]         = "H2";
   par->collPartMolWeights[0]    = 2.0159;
 
-  /* Set one or more of the following parameters for full output of the grid-specific data at any of 4 stages during the processing. (See the header of gridio.c for information about the stages.)
+  // Set one or more of the following parameters for full output of the grid-specific data at any of 4 stages during the processing. (See the header of gridio.c for information about the stages.)
+  
+  /*
   par->gridOutFiles[0] = "grid_1.ds";
   par->gridOutFiles[1] = "grid_2.ds";
   par->gridOutFiles[2] = "grid_3.ds";

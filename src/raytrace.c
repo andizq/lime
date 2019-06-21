@@ -236,7 +236,8 @@ if(!if(par->useVelFuncInRaytrace)): vel
   //extern _Bool sf3dmodels;
   unsigned int ID_picked_dum;
   double projDummy;
-
+  //printf("raytrace.c: %e\n", gp[1000].mol[0].nmol);
+  //printf("raytrace.c: %e\n", gp[1000].dens[0]);
   for(ichan=0;ichan<img[im].nchan;ichan++){
     ray.tau[ichan]=0.0;
     ray.intensity[ichan]=0.0;
@@ -295,8 +296,8 @@ if(!if(par->useVelFuncInRaytrace)): vel
       if(img[im].doline && par->useVelFuncInRaytrace){
 
 	if(sf3dmodels){
-	  
 	  if(fixed_grid){   
+	    
 	    if(posn >= par->pIntensity)
 	      /*
 	      ID_picked_dum = standard_min_gp(x[0],
@@ -307,12 +308,12 @@ if(!if(par->useVelFuncInRaytrace)): vel
 	      ID_picked_dum = standard_min(x[0],sf3d->x,
 					   x[1],sf3d->y,
 					   x[2],sf3d->z);
-
 	    else 
 	      ID_picked_dum = ID_picked[posn];
 
 	    velocity(0.0,0.0,(double)ID_picked_dum,vel);
 	    projDummy = dotProduct3D(dx,vel);
+
 	    for(i=0;i<nSteps;i++){
 	      projVels[i] = projDummy;
 	  
@@ -349,7 +350,6 @@ if(!if(par->useVelFuncInRaytrace)): vel
 	      projVels[i] = dotProduct3D(dx,vel);
 	      
 	    }
-
 	  }
   	    
 	}else{ // if not sf3dmodels (i.e. traditional lime)
@@ -423,6 +423,7 @@ if(!if(par->useVelFuncInRaytrace)): vel
     col+=ds;
     posn=nposn;
   } while(col < 2.0*fabs(zp));
+
 }
 
 /*....................................................................*/

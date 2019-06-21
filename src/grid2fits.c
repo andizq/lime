@@ -550,8 +550,10 @@ Ok we have a bit of a tricky situation here in that the number of columns we wri
         exit(1);
       }
 
-      for(i_ui=0;i_ui<totalNumGridPoints;i_ui++)
+      for(i_ui=0;i_ui<totalNumGridPoints;i_ui++){
         densm[i_ui] = (float)gp[i_ui].mol[i_us].nmol;
+	//printf("grid2fits.c: %d, %d, %e\n", i_us, i_ui, densm[i_ui]);
+      }
       fits_write_col(fptr, colDataTypes[colI-1], colI, firstRow, firstElem, (LONGLONG)totalNumGridPoints, densm, &status);
       processFitsError(status);
     }
@@ -967,6 +969,23 @@ Note that the calling routine needs to free gp, firstNearNeigh and collPartNames
   double *velj=NULL,*densn=NULL;
   float *dopb=NULL,*t=NULL,*abunm=NULL,*densm=NULL,*bField=NULL;
 
+  if(sf3dmodels) {
+    /* Global variable for further usage if turned on sf3dmodels. Will be filled in with the grid ids picked by Lime */
+    unsigned int i_id, ncells;
+    extern unsigned int *ID_picked; 
+    FILE *pickedids = fopen("pickedids.sf3d", "r");
+    fscanf(pickedids, "%*[^\n]\n", NULL); //Skips the first line
+    fscanf(pickedids, "%d", &ncells);
+
+    ID_picked = malloc (sizeof(unsigned int) * ncells);    
+    for(i_id = 0; i_id < ncells; i_id++)    
+      fscanf(pickedids,"%d",&ID_picked[i_id]);
+    fclose(pickedids);
+
+    //for(i_id = 0; i_id < ncells; i_id++)    
+    //  printf("%d\n",ID_picked[i_id]);
+  }
+
   /* Go to the GRID extension.
   */
   fits_movnam_hdu(fptr, BINARY_TBL, "GRID", 0, &status);
@@ -1168,9 +1187,11 @@ Note that the calling routine needs to free gp, firstNearNeigh and collPartNames
         processFitsError(status);
 
         for(i_LL=0;i_LL<numGridCells;i_LL++) {
+	  //printf("grid2fits.c, reading: %e\n", (double)densm[i_LL]);
           (*gp)[i_LL].mol[i_us].nmol = (double)densm[i_LL];
         }
       }
+      //printf("grid2fits.c, reading: %e\n", (*gp)[1000].mol[0].nmol);
       free(densm);
     }else{
       /* Read the ABUNMOL columns:

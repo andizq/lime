@@ -375,6 +375,7 @@ Note that the equivalent ratio value produced by the 1.6 code was 0.91.
 
   /* Choose the edge to follow.
   */
+
   if(i>1){ /* then nextSmallest, niOfNextSmallest should exist. */
     if((smallest + scatterReduction*nextSmallest)*gsl_rng_uniform(ran)<smallest){
       return niOfNextSmallest;
@@ -384,6 +385,7 @@ Note that the equivalent ratio value produced by the 1.6 code was 0.91.
   }else if(i>0){
     return niOfSmallest;
   }else{
+    //printf("%d , %d, %d, %f\n",i,presentGi, gp[presentGi].numNeigh, dirCos);
     if(!silent)
       bail_out("Photon propagation error - no valid edges.");
     exit(1);
@@ -512,7 +514,6 @@ Note that this is called from within the multi-threaded block.
     }
 
     here = gp[id].id;
-
     /* Photon propagation loop */
     numLinks=0;
     while(!gp[here].sink){ /* Testing for sink at loop start is redundant for the first step, since we only start photons from non-sink points, but it makes for simpler code. */
@@ -525,6 +526,7 @@ Note that this is called from within the multi-threaded block.
 exit(1);
       }
 
+      //printf("%d, %d, %f, %f, %f, %f\n",id,here,gp[id].x[0]/PC, gp[id].x[1]/PC, gp[id].x[2]/PC, gp[id].dens[0]);
       neighI = getNextEdge(inidir,id,here,gp,ran);
 
       there=gp[here].neigh[neighI]->id;

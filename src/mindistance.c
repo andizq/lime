@@ -55,7 +55,6 @@ int standard_min(double x, double *xm,
   return ind;
   */
   
-
   double pt[3] = { x, y, z };
   struct kdres *presults;
   char *data;
@@ -65,8 +64,6 @@ int standard_min(double x, double *xm,
   presults = kd_nearest( kd, pt );
   pch = (unsigned int*)kd_res_item( presults, pos );
   return *pch;
-
-
 }
 
 int index_min(double u, double *um, int Nu){

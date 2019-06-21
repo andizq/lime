@@ -429,6 +429,16 @@ exit(1);
   /* . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 Generate the grid point locations.
   */
+
+  if(fixed_grid && par->gridInFile!=NULL){
+      extern unsigned int *ids_fixed;
+      outRandDensities = malloc(sizeof(double   )*par->pIntensity); /* Not used at present; and in fact they are not useful outside this routine, because they are not the values of the physical density at that point, just what densityFunc3D() returns, which is not necessarily the same thing. */
+      outRandLocations = malloc(sizeof(*outRandLocations)*par->pIntensity);
+      ids_fixed = malloc (sizeof(unsigned int) * par->ncell);    
+      readFixedGrid(par, (unsigned int)par->pIntensity, outRandLocations, ids_fixed);
+    }
+
+
   if(!anyBitSet(par->dataFlags, DS_mask_x)){ /* This should only happen if we did not read a file. Generate the grid point locations. */
     mallocAndSetDefaultGrid(gp, (size_t)par->ncell, (size_t)par->nSpecies);
 
@@ -532,9 +542,8 @@ exit(1);
     gsl_rng_free(randGen);
 
     if(par->samplingAlgorithm==0){
-      //smooth(par,*gp); //AFIC: This function reorganizes points lying very close to each other. (if their distance < the par->minScale parameter)
       //if(!silent) printDone(5);
-      if(!fixed_grid){
+      if(!fixed_grid || !par->lte_only){
 	smooth(par,*gp); //AFIC: This function reorganizes points lying very close to each other. (if their distance < the par->minScale parameter)
 	if(!silent) printDone(5);
       }else 
@@ -551,7 +560,7 @@ exit(1);
 Generate the remaining values if needed. **Note** that we check a few of them to make sure the user has set the appropriate values.
   */
 
-  if(sf3dmodels) {
+  if(sf3dmodels && par->gridInFile==NULL) {
     /* Global variable for further usage if turned on sf3dmodels. Will be filled in with the grid ids picked by Lime */
     extern unsigned int *ID_picked; 
     //printf("%d %d %d\n",par->ncell,par->pIntensity,par->sinkPoints);
@@ -566,13 +575,13 @@ Generate the remaining values if needed. **Note** that we check a few of them to
     Have a look at the function reorderGrid in the file aux.c to see the upgraded definition 
     of ID_picked.
   */
-
-  if(sf3dmodels && fixed_grid){
+  
+  if(sf3dmodels && fixed_grid && par->gridInFile==NULL){
     for(i_id=0;i_id<par->ncell;i_id++)
       ID_picked[i_id] = ids_fixed[i_id]; 
       //ID_picked[i_id] = i_id; 
   }
- 
+
   if(!allBitsSet(par->dataFlags, DS_mask_neighbours)){
     unsigned long nExtraSinks;
 
@@ -600,12 +609,11 @@ Generate the remaining values if needed. **Note** that we check a few of them to
   }
   distCalc(par, *gp); /* Mallocs and sets .dir & .ds, sets .nphot. We don't store these values so we have to calculate them whether we read a file or not. */
 
-
   if(onlyBitsSet(par->dataFlags, DS_mask_2)) /* Only happens if (i) we read no file and have constructed this data within LIME, or (ii) we read a file at dataStageI==2. */
     writeGridIfRequired(par, *gp, NULL, 2);
 
   //Just checking whether the ID_picked indices were modified according to the reorderGrid function
-  if(fixed_grid){ 
+  if(fixed_grid && par->gridInFile==NULL){ 
     for(i_id=0;i_id<par->ncell;i_id++) 
       if(ids_fixed[i_id]!=ID_picked[i_id])
 	printf("id, id_fixed, id_picked, sink?: %d, %d, %d, %d\n",i_id,ids_fixed[i_id],ID_picked[i_id],(*gp)[i_id].sink);
@@ -613,13 +621,27 @@ Generate the remaining values if needed. **Note** that we check a few of them to
       //printf("id, picked, sink: %d, %d, %d\n",i_id,ID_picked[i_id],(*gp)[i_id].sink);
   }
   
-  
-  if(sf3dmodels && !fixed_grid){
+
+  if(sf3dmodels && !fixed_grid && par->gridInFile!=NULL){
       for(i_id=0;i_id<par->ncell;i_id++)
 	ID_picked[i_id] = find_id_min((*gp)[i_id].x[0], xm,
 				      (*gp)[i_id].x[1], ym,
 				      (*gp)[i_id].x[2], zm);
 	//printf("%d %d\n",i_id,ID_picked[i_id]);
+  }
+
+  if(sf3dmodels){
+    FILE *pickedids;
+    if((pickedids=fopen("pickedids.sf3d", "w"))==NULL){
+      if(!silent) bail_out("Error writing pickedids.sf3d file!"); 
+      exit(1);
+    }
+    printf("Writing picked point ids from sf3dmodels to file pickedids.sf3d\n");
+    fprintf(pickedids,"# IDs corresponding to the picked input sf3dmodels grid points to fill the Lime grid\n");
+    fprintf(pickedids,"%d\n",par->ncell);
+    for(i_id=0;i_id<par->ncell;i_id++)
+      fprintf(pickedids,"%d\n", ID_picked[i_id]);
+    fclose(pickedids);
   }
 
   if(!allBitsSet(par->dataFlags, DS_mask_density)){
@@ -833,6 +855,7 @@ exit(1);
     }
   }
 
+  
   if(onlyBitsSet(par->dataFlags & DS_mask_all_but_mag, DS_mask_4)) /* Only happens if (i) we read no file and have constructed this data within LIME, or (ii) we read a file at dataStageI==4. */
     writeGridIfRequired(par, *gp, NULL, 4);
 
