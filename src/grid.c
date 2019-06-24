@@ -622,7 +622,7 @@ Generate the remaining values if needed. **Note** that we check a few of them to
   }
   
 
-  if(sf3dmodels && !fixed_grid && par->gridInFile!=NULL){
+  if(sf3dmodels && !fixed_grid && par->gridInFile==NULL){
       for(i_id=0;i_id<par->ncell;i_id++)
 	ID_picked[i_id] = find_id_min((*gp)[i_id].x[0], xm,
 				      (*gp)[i_id].x[1], ym,
