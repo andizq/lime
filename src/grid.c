@@ -179,16 +179,14 @@ void readFixedGrid(configInfo *par, const unsigned int desiredNumPoints\
   double progFraction;
   double x[DIM], r_test;
 
-
   //new: next block
   //Insert the points into the KDTree object
   printf("*** Inserting points into kdtree...\n");
   extern void *kd;
   kd = kd_create(3);
-  
+
   /* Sample pIntensity number of points */
   for(i_u=0;i_u<desiredNumPoints;i_u++){
-    
     x[0] = sf3d->x[i_u];
     x[1] = sf3d->y[i_u];
     if(DIM==3) x[2] = sf3d->z[i_u];
@@ -199,12 +197,12 @@ void readFixedGrid(configInfo *par, const unsigned int desiredNumPoints\
 	outRandLocations[i_real][di]=x[di];
       }
       ids_fixed[i_real] = i_u;
-      //printf("%d, %d, %d\n",i_real, i_u, ids_fixed[i_real]);
       assert(kd_insert3(kd, 
-			x[0], x[1], x[2], 
-			&i_u) == 0);
+			x[0], x[1], x[2],
+			&ids_fixed[i_real]) == 0);
+			//&i_u) == 0);      
       i_real += 1;
-
+      
     }else
       pIntdown += 1;
   
