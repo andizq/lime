@@ -213,7 +213,7 @@ void readFixedGrid(configInfo *par, const unsigned int desiredNumPoints\
   if (pIntdown){
     par->pIntensity -= pIntdown;
     par->ncell -= pIntdown;
-    for(i_id=par->pIntensity;i_id<par->ncell;i_id++)
+    for(i_id=par->pIntensity;i_id<par->ncell;i_id++) //sinkpoint ids
       ids_fixed[i_id] = i_id;
     printf("\n\tWARNING: Some grid points were rejected because they were not \n\twithin the LIME domain set by the user via par->radius.");
     printf("\n\tThe parameter par->pIntensity was therefore redefined to\n\tcontain %d points out of the initial %d.\n",par->pIntensity,desiredNumPoints);
@@ -540,12 +540,15 @@ exit(1);
     gsl_rng_free(randGen);
 
     if(par->samplingAlgorithm==0){
+      //smooth(par,*gp); 
       //if(!silent) printDone(5);
+      
       if(!fixed_grid || !par->lte_only){
 	smooth(par,*gp); //AFIC: This function reorganizes points lying very close to each other. (if their distance < the par->minScale parameter)
 	if(!silent) printDone(5);
       }else 
 	if(!silent) printf("   Fixed grid: Smoothing turned off\n\n");
+      
     }
 
     par->dataFlags |= DS_mask_1;

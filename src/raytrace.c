@@ -298,7 +298,7 @@ if(!if(par->useVelFuncInRaytrace)): vel
 	if(sf3dmodels){
 	  if(fixed_grid){   
 	    
-	    if(posn >= par->pIntensity)
+	    if(posn >= par->pIntensity){
 	      /*
 	      ID_picked_dum = standard_min_gp(x[0],
 					      x[1],
@@ -308,9 +308,11 @@ if(!if(par->useVelFuncInRaytrace)): vel
 	      ID_picked_dum = standard_min(x[0],sf3d->x,
 					   x[1],sf3d->y,
 					   x[2],sf3d->z);
+	      //printf("id:%d %d\n",ID_picked_dum, sizeof(unsigned int));
+	    }
 	    else 
 	      ID_picked_dum = ID_picked[posn];
-
+	    
 	    velocity(0.0,0.0,(double)ID_picked_dum,vel);
 	    projDummy = dotProduct3D(dx,vel);
 
