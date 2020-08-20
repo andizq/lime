@@ -1173,25 +1173,28 @@ exit(1);
       calcGridMolDoppler(&par, md, gp);
     }
     if(par.useAbun && par.gridInFile==NULL) 
-      //Added by AFIC: && par.gridInFile==NULL, for the moment the reading from lime files is only working for the 5th lime file.
+      //Added by AFIC: && par.gridInFile==NULL, which HAS to be here, otherwise the densities will be set to zero when par.gridInFile provided (checked using Lime example on 19/08/2020)
+      // For the moment the reading from lime files is only working for the 5th lime file. 
       // But in fact, I have just checked that even though it runs with the 5th file, the level populations are kind of not being 
       //  loaded properly as the progress seems to be completely lost. I know this because of the Signal-to-Noise (SNR) values it is 
       //    showing and also because of the the output images.
       calcGridMolDensities(&par, &gp); //This was setting nmol to zero when reading nmol from the 5th lime file.
     //printf("run.c: %e\n", gp[1000].mol[0].nmol);
+
+    
     for(gi=0;gi<par.ncell;gi++){
       for(si=0;si<par.nSpecies;si++){
         gp[gi].mol[si].specNumDens = malloc(sizeof(double)*md[si].nlev);
-        gp[gi].mol[si].pops        = malloc(sizeof(double)*md[si].nlev);
-        for(ei=0;ei<md[si].nlev;ei++){
+	if (!allBitsSet(par.dataFlags, DS_mask_populations)) gp[gi].mol[si].pops = malloc(sizeof(double)*md[si].nlev);
+	for(ei=0;ei<md[si].nlev;ei++){
           gp[gi].mol[si].specNumDens[ei] = 0.0;
-          gp[gi].mol[si].pops[ei] = 0.0;
+          if (!allBitsSet(par.dataFlags, DS_mask_populations)) gp[gi].mol[si].pops[ei] = 0.0;
         }
       }
     }
 
     if(par.doSolveRTE){
-      gridPopsInit(&par,md,gp);
+      if (!allBitsSet(par.dataFlags, DS_mask_populations)) gridPopsInit(&par,md,gp);
       nExtraSolverIters = levelPops(md, &par, gp, &popsdone, lamtab, kaptab, nEntries);
     }
 
